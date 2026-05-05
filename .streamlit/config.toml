@@ -1,0 +1,15 @@
+[theme]
+# Primary accent color (Blue from design system)
+primaryColor = "#3B82F6"
+
+# Background color (White)
+backgroundColor = "#FFFFFF"
+
+# Secondary background color (Off-white/slate for sidebar and cards)
+secondaryBackgroundColor = "#F8FAFC"
+
+# Text color (Dark slate / black)
+textColor = "#0F172A"
+
+# Font (Inter is default sans-serif for clean look)
+font = "sans serif"
