@@ -1,0 +1,219 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Global Typography & Background */
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+.stApp {
+    background-color: #F8FAFC;
+    color: #0F172A;
+}
+
+/* Clean Layout Padding */
+.block-container {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+    max-width: 1200px;
+}
+
+/* Buttons */
+.stButton>button {
+    background-color: #FFFFFF;
+    color: #0F172A;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.stButton>button:hover {
+    border-color: #94A3B8;
+    background-color: #F1F5F9;
+    transform: translateY(-1px);
+}
+.stButton>button:active {
+    transform: translateY(0);
+    background-color: #E2E8F0;
+}
+
+/* Primary CTA Button override */
+.stButton>button[kind="primary"] {
+    background-color: #0F172A;
+    color: #FFFFFF;
+    border: 1px solid #0F172A;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.stButton>button[kind="primary"]:hover {
+    background-color: #1E293B;
+    border-color: #1E293B;
+    color: #FFFFFF;
+}
+
+/* Target teks di dalam tombol primary */
+.stButton>button[kind="primary"] p,
+.stButton button[kind="primary"] p,
+button[kind="primary"] p {
+    color: #FFFFFF !important;
+}
+
+.stButton>button[kind="primary"]:hover p,
+.stButton button[kind="primary"]:hover p,
+button[kind="primary"]:hover p {
+    color: #FFFFFF !important;
+}
+
+/* Hide Streamlit Branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Sidebar Styling */
+section[data-testid="stSidebar"] {
+    background-color: #FFFFFF;
+    border-right: 1px solid #E2E8F0;
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0F172A;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.025em;
+}
+.sidebar-subtitle {
+    font-size: 0.875rem;
+    color: #64748B;
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+
+/* Tabs Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2rem;
+    border-bottom: 1px solid #E2E8F0;
+}
+.stTabs [data-baseweb="tab"] {
+    height: 3rem;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 0;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-weight: 500;
+    color: #64748B;
+}
+.stTabs [aria-selected="true"] {
+    color: #0F172A;
+    border-bottom: 2px solid #0F172A;
+}
+
+/* Upload Component Styling */
+[data-testid="stFileUploadDropzone"] {
+    background-color: #FFFFFF;
+    border: 1px dashed #CBD5E1;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+[data-testid="stFileUploadDropzone"]:hover {
+    border-color: #94A3B8;
+    background-color: #F8FAFC;
+}
+
+/* Cards / Containers */
+.css-1r6slb0 {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Callouts / Info Boxes */
+.custom-info-box {
+    background-color: #EFF6FF;
+    border-left: 4px solid #3B82F6;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    color: #1E3A8A;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Typography */
+h1 {
+    font-size: 2.25rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.025em !important;
+    color: #0F172A !important;
+    margin-bottom: 0.5rem !important;
+}
+h2 {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.025em !important;
+    color: #0F172A !important;
+}
+h3 {
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    color: #1E293B !important;
+}
+p {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Selectbox / Dropdown Styling */
+[data-testid="stSelectbox"] label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #0F172A;
+    margin-bottom: 0.25rem;
+}
+
+[data-testid="stSelectbox"] div[data-baseweb="select"] {
+    background-color: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+[data-testid="stSelectbox"] div[data-baseweb="select"]:hover {
+    border-color: #3B82F6;
+    background-color: #DBEAFE;
+}
+
+[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+    background-color: transparent;
+    color: #1E3A8A;
+    font-weight: 500;
+}
+
+/* Dropdown menu styling */
+div[data-baseweb="popover"] ul {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+div[data-baseweb="popover"] li {
+    color: #0F172A;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+div[data-baseweb="popover"] li:hover {
+    background-color: #EFF6FF;
+}
+
+div[data-baseweb="popover"] li[aria-selected="true"] {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+    font-weight: 500;
+}

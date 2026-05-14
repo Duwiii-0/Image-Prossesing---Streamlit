@@ -1,0 +1,62 @@
+# Enhancement defaults
+DEFAULT_BRIGHTNESS = 0
+DEFAULT_CONTRAST = 0
+DEFAULT_BLUR_SIZE = 1
+DEFAULT_SHARPENING = 0
+
+# Geometric defaults
+DEFAULT_ROTATION_ANGLE = 0
+DEFAULT_TRANSLATE_X = 0
+DEFAULT_TRANSLATE_Y = 0
+DEFAULT_SCALE_FACTOR = 1.0
+DEFAULT_CROP_RATIO = 1.0
+DEFAULT_INTERPOLATION = "Bilinear"
+
+# Restoration defaults
+DEFAULT_RESTORATION_GAUSSIAN_KERNEL = 1
+DEFAULT_RESTORATION_MEDIAN_KERNEL = 1
+DEFAULT_RESTORATION_SP_KERNEL = 1
+
+# Binary & Edge defaults
+DEFAULT_BINARY_EDGE_MODE = "none"
+DEFAULT_BINARY_THRESHOLD_VALUE = 127
+DEFAULT_BINARY_THRESHOLD_METHOD = "Binary"
+DEFAULT_BINARY_ADAPTIVE_METHOD = "Mean"
+DEFAULT_BINARY_ADAPTIVE_BLOCK = 11
+DEFAULT_BINARY_ADAPTIVE_C = 2
+DEFAULT_EDGE_METHOD = "Canny"
+DEFAULT_EDGE_LOW = 50
+DEFAULT_EDGE_HIGH = 150
+DEFAULT_EDGE_KERNEL = 3
+DEFAULT_EDGE_SOBEL_DIRECTION = "Both"
+DEFAULT_EDGE_LOG_SIGMA = 1.0
+DEFAULT_MORPH_OPERATION = "Erosion"
+DEFAULT_MORPH_KERNEL = 3
+DEFAULT_MORPH_ITERATIONS = 1
+
+# Crop defaults
+DEFAULT_CROP_RATIO_SELECTED = "Original"
+DEFAULT_CROP_SCALE = 1.0
+DEFAULT_CROP_X_OFFSET = 0
+DEFAULT_CROP_Y_OFFSET = 0
+
+# Options for dropdowns
+THRESHOLD_METHODS = ["Binary", "Binary Inverse"]
+ADAPTIVE_METHODS = ["Mean", "Gaussian"]
+EDGE_METHODS = ["Canny", "Sobel", "Prewitt", "Roberts", "Laplacian", "LoG"]
+SOBEL_DIRECTIONS = ["X", "Y", "Both"]
+MORPH_OPERATIONS = ["Erosion", "Dilation"]
+
+# Ratio options for crop
+RATIO_OPTIONS = {
+    "Original": None,
+    "1:1 (Square)": 1.0,
+    "3:4 (Portrait)": 3/4,
+    "4:3 (Landscape)": 4/3,
+    "16:9 (Widescreen)": 16/9,
+    "9:16 (Vertical)": 9/16,
+    "2:3 (Portrait)": 2/3,
+    "3:2 (Landscape)": 3/2,
+    "18:9 (Cinematic)": 2.0,
+    "9:18 (Vertical Cinematic)": 0.5
+}
