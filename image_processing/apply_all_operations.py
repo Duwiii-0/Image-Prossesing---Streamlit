@@ -11,6 +11,7 @@ from image_processing.geometric_transformation import (
     apply_translation,
     apply_scaling,
     apply_center_crop,
+    apply_ratio_crop,
 )
 
 from image_processing.image_restoration import (
@@ -34,7 +35,11 @@ def apply_geometric_only(
     translate_y=0,
     scale=1.0,
     crop_ratio=1.0,
-    interpolation="Bilinear"  
+    interpolation="Bilinear",
+    crop_target_ratio=None,
+    crop_scale=1.0,
+    crop_x_offset=0,
+    crop_y_offset=0
 ):
     """Geometric transformation saja"""
     if base_image is None or not isinstance(base_image, np.ndarray):
@@ -47,6 +52,15 @@ def apply_geometric_only(
     
     if scale != 1.0:
         img = apply_scaling(img, scale=scale)
+    
+    if crop_target_ratio is not None:
+        img = apply_ratio_crop(
+            img,
+            target_ratio=crop_target_ratio,
+            scale=crop_scale,
+            x_offset=crop_x_offset,
+            y_offset=crop_y_offset
+        )
     
     if crop_ratio < 1.0:
         img = apply_center_crop(img, crop_ratio=crop_ratio)
@@ -69,6 +83,10 @@ def apply_all_operations(
     restoration_gaussian_kernel=1,
     restoration_median_kernel=1,
     restoration_sp_kernel=1,
+    crop_target_ratio=None,
+    crop_scale=1.0,
+    crop_x_offset=0,
+    crop_y_offset=0,
     binary_edge_mode="none",
     binary_threshold_value=127,
     binary_threshold_method="Binary",
@@ -113,7 +131,11 @@ def apply_all_operations(
         translate_y=translate_y,
         scale=scale,
         crop_ratio=crop_ratio,
-        interpolation=interpolation
+        interpolation=interpolation,
+        crop_target_ratio=crop_target_ratio,
+        crop_scale=crop_scale,
+        crop_x_offset=crop_x_offset,
+        crop_y_offset=crop_y_offset
     )
     
     if img is None:

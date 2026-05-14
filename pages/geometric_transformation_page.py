@@ -1,6 +1,6 @@
 import streamlit as st
 import cv2
-from image_processing.geometric_transformation import apply_ratio_crop, get_crop_dimensions
+from image_processing.geometric_transformation import get_crop_dimensions
 from utils.preview_helper import get_preview_image
 from utils.ui_helpers import render_image_preview
 from utils.constants import RATIO_OPTIONS
@@ -21,19 +21,18 @@ def render_geometric_transformation_page():
     st.markdown("Apply geometric transformations to your image.")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Inisialisasi state untuk crop
-    if 'crop_ratio_selected' not in st.session_state:
-        st.session_state.crop_ratio_selected = "Original"
-    if 'crop_scale' not in st.session_state:
-        st.session_state.crop_scale = 1.0
-    if 'crop_x_offset' not in st.session_state:
-        st.session_state.crop_x_offset = 0
-    if 'crop_y_offset' not in st.session_state:
-        st.session_state.crop_y_offset = 0
-    if 'temp_crop_image' not in st.session_state:
-        st.session_state.temp_crop_image = None
-
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Rotate", "Flip", "Translation", "Scaling", "Crop"])
+
+    # Before image for crop preview (processed_image + apply_all_operations WITHOUT crop)
+    before_image_for_crop = get_preview_image(extra_params={'crop_target_ratio': None})
+    
+    # Calculate original ratio
+    h, w = before_image_for_crop.shape[:2]
+    original_ratio = w / h
+    
+    # Initializing crop_target_ratio if None
+    if st.session_state.crop_target_ratio is None and st.session_state.crop_ratio_selected == "Original":
+        st.session_state.crop_target_ratio = original_ratio
 
     # TAB 1: ROTATE
     with tab1:
@@ -47,6 +46,11 @@ def render_geometric_transformation_page():
         if rotation_val != st.session_state.rotation_angle:
             st.session_state.rotation_angle = rotation_val
             st.rerun()
+        
+        preview_image = get_preview_image()
+        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
+        st.markdown("### Image Preview")
+        render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 2: FLIP 
     with tab2:
@@ -65,6 +69,11 @@ def render_geometric_transformation_page():
             if st.button("↕ Flip Vertical", type="primary", use_container_width=True):
                 st.session_state.processed_image = cv2.flip(st.session_state.processed_image, 0)
                 st.rerun()
+        
+        preview_image = get_preview_image()
+        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
+        st.markdown("### Image Preview")
+        render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 3: TRANSLATION 
     with tab3:
@@ -91,6 +100,11 @@ def render_geometric_transformation_page():
             if trans_y_val != st.session_state.translate_y:
                 st.session_state.translate_y = trans_y_val
                 st.rerun()
+        
+        preview_image = get_preview_image()
+        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
+        st.markdown("### Image Preview")
+        render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 4: SCALING 
     with tab4:
@@ -106,9 +120,11 @@ def render_geometric_transformation_page():
         if scale_val != st.session_state.scale_factor:
             st.session_state.scale_factor = scale_val
             st.rerun()
-
-    # Before image for crop (tanpa crop)
-    before_image_for_crop = get_preview_image(extra_params={'crop_ratio': 1.0})
+        
+        preview_image = get_preview_image()
+        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
+        st.markdown("### Image Preview")
+        render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 5: CROP 
     with tab5:
@@ -125,148 +141,119 @@ def render_geometric_transformation_page():
                 key="crop_ratio_select"
             )
         
+        if selected_ratio != "Original":
+            target_ratio = RATIO_OPTIONS[selected_ratio]
+        else:
+            target_ratio = original_ratio
+        
         if selected_ratio != st.session_state.crop_ratio_selected:
             st.session_state.crop_ratio_selected = selected_ratio
+            st.session_state.crop_target_ratio = target_ratio
             st.session_state.crop_scale = 1.0
-            if selected_ratio != "Original" and before_image_for_crop is not None:
-                target_ratio = RATIO_OPTIONS[selected_ratio]
-                h, w = before_image_for_crop.shape[:2]
-                base_crop_w, base_crop_h = get_crop_dimensions(w, h, target_ratio)
-                st.session_state.crop_x_offset = (w - base_crop_w) // 2
-                st.session_state.crop_y_offset = (h - base_crop_h) // 2
-            else:
-                st.session_state.crop_x_offset = 0
-                st.session_state.crop_y_offset = 0
+            st.session_state.crop_x_offset = 0
+            st.session_state.crop_y_offset = 0
             st.rerun()
         
-        if selected_ratio != "Original" and before_image_for_crop is not None:
-            target_ratio = RATIO_OPTIONS[selected_ratio]
-            
-            # Hitung dimensi crop berdasarkan rasio dengan skala
-            h, w = before_image_for_crop.shape[:2]
-            
-            # SCALE RATIO - slider untuk memperkecil frame crop
-            st.markdown("<br>", unsafe_allow_html=True)
-            scale_val = st.slider(
-                "Crop Scale (Zoom Out)", 
-                0.3, 1.0, 
-                step=0.01,
-                value=st.session_state.crop_scale,
-                key="crop_scale_slider",
-                help="Reduce crop frame to expand visible area"
-            )
-            if scale_val != st.session_state.crop_scale:
-                st.session_state.crop_scale = scale_val
-                base_crop_w, base_crop_h = get_crop_dimensions(w, h, target_ratio)
-                new_crop_w = int(base_crop_w * scale_val)
-                new_crop_h = int(base_crop_h * scale_val)
-                st.session_state.crop_x_offset = (w - new_crop_w) // 2
-                st.session_state.crop_y_offset = (h - new_crop_h) // 2
-                st.rerun()
-            
-            # Hitung dimensi crop target (sebelum skala)
-            base_crop_w, base_crop_h = get_crop_dimensions(w, h, target_ratio)
-            
-            # Terapkan skala ke dimensi crop
-            crop_w = int(base_crop_w * st.session_state.crop_scale)
-            crop_h = int(base_crop_h * st.session_state.crop_scale)
-            
-            # Pastikan crop tidak melebihi dimensi gambar
-            crop_w = min(crop_w, w)
-            crop_h = min(crop_h, h)
-            
-            st.caption(f"Target crop dimension: {crop_w} x {crop_h} pixels (scale: {st.session_state.crop_scale:.0%})")
-            
-            # Hitung max offset
-            max_x_offset = w - crop_w
-            max_y_offset = h - crop_h
-            
-            # Validasi offset agar tidak melebihi max
-            if st.session_state.crop_x_offset > max_x_offset:
-                st.session_state.crop_x_offset = max(max_x_offset // 2, 0)
-            if st.session_state.crop_y_offset > max_y_offset:
-                st.session_state.crop_y_offset = max(max_y_offset // 2, 0)
-            
-            # SLIDER MOVE HORIZONTAL DAN VERTICAL 
-            col_slider_x, col_slider_y = st.columns(2)
-            
-            with col_slider_x:
-                if max_x_offset > 0:
-                    x_offset = st.slider(
-                        "Move Horizontal (X)", 
-                        0, max_x_offset,
-                        value=min(st.session_state.crop_x_offset, max_x_offset),
-                        key="crop_x_slider"
-                    )
-                    if x_offset != st.session_state.crop_x_offset:
-                        st.session_state.crop_x_offset = x_offset
-                        st.rerun()
-                else:
-                    st.session_state.crop_x_offset = 0
-                    st.caption("Horizontal: centered (no space to move)")
-            
-            with col_slider_y:
-                if max_y_offset > 0:
-                    y_offset = st.slider(
-                        "Move Vertical (Y)", 
-                        0, max_y_offset,
-                        value=min(st.session_state.crop_y_offset, max_y_offset),
-                        key="crop_y_slider"
-                    )
-                    if y_offset != st.session_state.crop_y_offset:
-                        st.session_state.crop_y_offset = y_offset
-                        st.rerun()
-                else:
-                    st.session_state.crop_y_offset = 0
-                    st.caption("Vertical: centered (no space to move)")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("**Crop area preview (red box):**")
-
-            # Tombol Apply Crop
-            col_btn_left, col_btn_center, col_btn_right = st.columns([1, 1, 1])
-            with col_btn_center:
-                if st.button("Apply Crop", type="primary", use_container_width=True):
-                    result = apply_ratio_crop(
-                        before_image_for_crop,
-                        target_ratio=target_ratio,
-                        scale=st.session_state.crop_scale,
-                        x_offset=st.session_state.crop_x_offset,
-                        y_offset=st.session_state.crop_y_offset
-                    )
-                    st.session_state.processed_image = result
-                    # Reset state
-                    st.session_state.crop_ratio_selected = "Original"
-                    st.session_state.crop_scale = 1.0
-                    st.session_state.crop_x_offset = 0
-                    st.session_state.crop_y_offset = 0
+        # Update crop_target_ratio in every changes
+        if st.session_state.crop_target_ratio != target_ratio:
+            st.session_state.crop_target_ratio = target_ratio
+            st.rerun()
+        
+        h, w = before_image_for_crop.shape[:2]
+        
+        # Calculate crop dimensions
+        base_crop_w, base_crop_h = get_crop_dimensions(w, h, target_ratio)
+        
+        # SCALE RATIO slider
+        st.markdown("<br>", unsafe_allow_html=True)
+        scale_val = st.slider(
+            "Crop Scale (Zoom Out)", 
+            0.3, 1.0, 
+            step=0.01,
+            value=st.session_state.crop_scale,
+            key="crop_scale_slider",
+            help="Reduce crop frame to expand visible area"
+        )
+        if scale_val != st.session_state.crop_scale:
+            st.session_state.crop_scale = scale_val
+            new_crop_w = int(base_crop_w * scale_val)
+            new_crop_h = int(base_crop_h * scale_val)
+            st.session_state.crop_x_offset = max((w - new_crop_w) // 2, 0)
+            st.session_state.crop_y_offset = max((h - new_crop_h) // 2, 0)
+            st.rerun()
+        
+        crop_w = int(base_crop_w * st.session_state.crop_scale)
+        crop_h = int(base_crop_h * st.session_state.crop_scale)
+        crop_w = min(crop_w, w)
+        crop_h = min(crop_h, h)
+        
+        st.caption(f"Target crop dimension: {crop_w} x {crop_h} pixels (scale: {st.session_state.crop_scale:.0%})")
+        
+        max_x_offset = w - crop_w
+        max_y_offset = h - crop_h
+        
+        if st.session_state.crop_x_offset > max_x_offset:
+            st.session_state.crop_x_offset = max(max_x_offset // 2, 0)
+        if st.session_state.crop_y_offset > max_y_offset:
+            st.session_state.crop_y_offset = max(max_y_offset // 2, 0)
+        
+        col_slider_x, col_slider_y = st.columns(2)
+        
+        with col_slider_x:
+            if max_x_offset > 0:
+                x_offset = st.slider(
+                    "Move Horizontal (X)", 
+                    0, max_x_offset,
+                    value=min(st.session_state.crop_x_offset, max_x_offset),
+                    key="crop_x_slider"
+                )
+                if x_offset != st.session_state.crop_x_offset:
+                    st.session_state.crop_x_offset = x_offset
                     st.rerun()
-
-            # Preview area crop (visualisasi dengan rectangle)
-            if before_image_for_crop is not None:
-                # Buat salinan gambar untuk visualisasi
-                preview_with_box = before_image_for_crop.copy()
-                
-                # Gambar kotak crop (merah) - menggunakan opencv
-                pt1 = (st.session_state.crop_x_offset, st.session_state.crop_y_offset)
-                pt2 = (st.session_state.crop_x_offset + crop_w, st.session_state.crop_y_offset + crop_h)
-                cv2.rectangle(preview_with_box, pt1, pt2, (255, 0, 0), 3)
-                
-                # Buat kolom dengan lebar lebih kecil
-                col_preview_left, col_preview_center, col_preview_right = st.columns([1, 2, 1])
-                with col_preview_center:
-                    st.image(preview_with_box, use_container_width=True)
-            
-        elif before_image_for_crop is not None and selected_ratio == "Original":
-            st.info("Select an aspect ratio above to crop your image.")
-
-    # Preview image (geometric + enhancement) - hanya tampil jika crop tidak aktif
-    is_crop_active = st.session_state.crop_ratio_selected != "Original"
-    
-    if not is_crop_active:
-        preview_image = get_preview_image()
-
-        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
-        st.markdown("### Image Preview")
-
-        render_image_preview(st.session_state.original_image, preview_image)
+            else:
+                st.caption("Horizontal: centered")
+        
+        with col_slider_y:
+            if max_y_offset > 0:
+                y_offset = st.slider(
+                    "Move Vertical (Y)", 
+                    0, max_y_offset,
+                    value=min(st.session_state.crop_y_offset, max_y_offset),
+                    key="crop_y_slider"
+                )
+                if y_offset != st.session_state.crop_y_offset:
+                    st.session_state.crop_y_offset = y_offset
+                    st.rerun()
+            else:
+                st.caption("Vertical: centered")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### Crop Preview")
+        
+        # Preview with red box
+        preview_with_box = before_image_for_crop.copy()
+        
+        if len(preview_with_box.shape) == 2:
+            preview_with_box = cv2.cvtColor(preview_with_box, cv2.COLOR_GRAY2RGB)
+        elif preview_with_box.shape[2] == 1:
+            preview_with_box = cv2.cvtColor(preview_with_box, cv2.COLOR_GRAY2RGB)
+        elif preview_with_box.shape[2] == 4:
+            preview_with_box = cv2.cvtColor(preview_with_box, cv2.COLOR_RGBA2RGB)
+        
+        cropped_result = preview_with_box[
+            st.session_state.crop_y_offset:st.session_state.crop_y_offset + crop_h,
+            st.session_state.crop_x_offset:st.session_state.crop_x_offset + crop_w
+        ].copy()
+        
+        pt1 = (st.session_state.crop_x_offset, st.session_state.crop_y_offset)
+        pt2 = (st.session_state.crop_x_offset + crop_w, st.session_state.crop_y_offset + crop_h)
+        
+        cv2.rectangle(preview_with_box, pt1, pt2, (0, 0, 0), 2)       
+        cv2.rectangle(preview_with_box, pt1, pt2, (255, 60, 60), 3)   
+        
+        render_image_preview(
+            preview_with_box, 
+            cropped_result,
+            title_left="Crop area preview (red box)",
+            title_right="Cropped Result"
+        )

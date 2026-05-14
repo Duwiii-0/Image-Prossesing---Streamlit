@@ -10,15 +10,14 @@ def load_css():
     except:
         pass
 
-def render_image_preview(original_image, modified_image):
-    """Render two column image preview with standard titles"""
+def render_image_preview(image_left, image_right, title_left="Original Reference", title_right="Modified Output"):
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("**Original Reference**")
-        st.image(original_image, use_container_width=True)
+        st.markdown(f"**{title_left}**")
+        st.image(image_left, use_container_width=True)
     with col2:
-        st.markdown("**Modified Output**")
-        st.image(modified_image, use_container_width=True)
+        st.markdown(f"**{title_right}**")
+        st.image(image_right, use_container_width=True)
 
 def create_download_button(image, filename="edited_image.png", button_text="Save Edited Image"):
     """Create download button for image"""

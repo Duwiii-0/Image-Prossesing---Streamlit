@@ -18,6 +18,12 @@ def get_base_params():
         'crop_ratio': st.session_state.crop_ratio,
         'interpolation': st.session_state.interpolation_method,
         
+        # Crop parameters 
+        'crop_target_ratio': st.session_state.crop_target_ratio,
+        'crop_scale': st.session_state.crop_scale,
+        'crop_x_offset': st.session_state.crop_x_offset,
+        'crop_y_offset': st.session_state.crop_y_offset,
+        
         # Restoration
         'restoration_gaussian_kernel': st.session_state.restoration_gaussian_kernel,
         'restoration_median_kernel': st.session_state.restoration_median_kernel,

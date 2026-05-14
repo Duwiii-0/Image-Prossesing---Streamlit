@@ -32,6 +32,18 @@ def init_session_state():
     if 'interpolation_method' not in st.session_state:
         st.session_state.interpolation_method = DEFAULT_INTERPOLATION
     
+    # Crop 
+    if 'crop_target_ratio' not in st.session_state:
+        st.session_state.crop_target_ratio = DEFAULT_CROP_TARGET_RATIO
+    if 'crop_scale' not in st.session_state:
+        st.session_state.crop_scale = DEFAULT_CROP_SCALE
+    if 'crop_x_offset' not in st.session_state:
+        st.session_state.crop_x_offset = DEFAULT_CROP_X_OFFSET
+    if 'crop_y_offset' not in st.session_state:
+        st.session_state.crop_y_offset = DEFAULT_CROP_Y_OFFSET
+    if 'crop_ratio_selected' not in st.session_state:
+        st.session_state.crop_ratio_selected = DEFAULT_CROP_RATIO_SELECTED
+    
     # Restoration
     if 'restoration_gaussian_kernel' not in st.session_state:
         st.session_state.restoration_gaussian_kernel = DEFAULT_RESTORATION_GAUSSIAN_KERNEL
@@ -71,16 +83,6 @@ def init_session_state():
         st.session_state.morph_kernel = DEFAULT_MORPH_KERNEL
     if 'morph_iterations' not in st.session_state:
         st.session_state.morph_iterations = DEFAULT_MORPH_ITERATIONS
-    
-    # Crop
-    if 'crop_ratio_selected' not in st.session_state:
-        st.session_state.crop_ratio_selected = DEFAULT_CROP_RATIO_SELECTED
-    if 'crop_scale' not in st.session_state:
-        st.session_state.crop_scale = DEFAULT_CROP_SCALE
-    if 'crop_x_offset' not in st.session_state:
-        st.session_state.crop_x_offset = DEFAULT_CROP_X_OFFSET
-    if 'crop_y_offset' not in st.session_state:
-        st.session_state.crop_y_offset = DEFAULT_CROP_Y_OFFSET
 
 def reset_enhancement_state():
     """Reset only enhancement state to defaults"""
@@ -97,6 +99,14 @@ def reset_geometric_state():
     st.session_state.scale_factor = DEFAULT_SCALE_FACTOR
     st.session_state.crop_ratio = DEFAULT_CROP_RATIO
     st.session_state.interpolation_method = DEFAULT_INTERPOLATION
+
+def reset_crop_state():
+    """Reset only crop state to defaults"""
+    st.session_state.crop_target_ratio = DEFAULT_CROP_TARGET_RATIO
+    st.session_state.crop_scale = DEFAULT_CROP_SCALE
+    st.session_state.crop_x_offset = DEFAULT_CROP_X_OFFSET
+    st.session_state.crop_y_offset = DEFAULT_CROP_Y_OFFSET
+    st.session_state.crop_ratio_selected = DEFAULT_CROP_RATIO_SELECTED
 
 def reset_restoration_state():
     """Reset only restoration state to defaults"""
@@ -122,17 +132,10 @@ def reset_binary_edge_state():
     st.session_state.morph_kernel = DEFAULT_MORPH_KERNEL
     st.session_state.morph_iterations = DEFAULT_MORPH_ITERATIONS
 
-def reset_crop_state():
-    """Reset only crop state to defaults"""
-    st.session_state.crop_ratio_selected = DEFAULT_CROP_RATIO_SELECTED
-    st.session_state.crop_scale = DEFAULT_CROP_SCALE
-    st.session_state.crop_x_offset = DEFAULT_CROP_X_OFFSET
-    st.session_state.crop_y_offset = DEFAULT_CROP_Y_OFFSET
-
 def reset_all_state():
     """Reset all state to defaults (keep images intact)"""
     reset_enhancement_state()
     reset_geometric_state()
+    reset_crop_state()
     reset_restoration_state()
     reset_binary_edge_state()
-    reset_crop_state()
