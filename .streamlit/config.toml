@@ -2,17 +2,17 @@
 showSidebarNavigation = false
 
 [theme]
-# Primary accent color (Blue from design system)
-primaryColor = "#3B82F6"
+# Primary accent color (Electric Indigo)
+primaryColor = "#6366F1"
 
-# Background color (White)
-backgroundColor = "#FFFFFF"
+# Background color (Deep space navy)
+backgroundColor = "#0D0F17"
 
-# Secondary background color (Off-white/slate for sidebar and cards)
-secondaryBackgroundColor = "#F8FAFC"
+# Secondary background color (Surface/card bg)
+secondaryBackgroundColor = "#13151F"
 
-# Text color (Dark slate / black)
-textColor = "#0F172A"
+# Text color (White/slate)
+textColor = "#F1F5F9"
 
 # Font (Inter is default sans-serif for clean look)
 font = "sans serif"

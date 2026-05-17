@@ -1,16 +1,40 @@
 import streamlit as st
 import cv2
+import numpy as np
+from PIL import Image
 from image_processing.geometric_transformation import get_crop_dimensions
 from utils.preview_helper import get_preview_image
-from utils.ui_helpers import render_image_preview
+from utils.ui_helpers import render_image_preview, render_reset_and_save_buttons, render_section_header
 from utils.constants import RATIO_OPTIONS
 
 
 def render_geometric_transformation_page():
+    render_section_header(
+        title="Geometric Transformation",
+        description="Rotate, flip, scale, and crop your image.",
+        icon="📐"
+    )
+    
+    # Upload File
+    uploaded_file = st.file_uploader(
+        "Select an Image (JPG, PNG, BMP)",
+        type=["jpg", "png", "jpeg", "bmp"],
+        key="geometric_transformation_uploader"
+    )
+    
+    if uploaded_file is not None:
+        # Read image
+        image = Image.open(uploaded_file).convert('RGB')
+        image_np = np.array(image)
+        
+        st.session_state.original_image = image_np.copy()
+        st.session_state.processed_image = image_np.copy()
+    
     if st.session_state.original_image is None:
         st.markdown("""
-        <div class="custom-info-box">
-            <strong>Notice:</strong> Please upload an image via the Image Management menu before applying any transformations.
+        <div style="background: rgba(99, 102, 241, 0.1); border: 1px dashed rgba(99, 102, 241, 0.4); padding: 2rem; text-align: center; border-radius: 12px; margin-top: 1rem;">
+            <span style="font-size: 2rem;">📸</span>
+            <p style="color: #94A3B8; margin-top: 0.5rem; font-weight: 500;">Please upload an image to begin.</p>
         </div>
         """, unsafe_allow_html=True)
         return
@@ -18,8 +42,7 @@ def render_geometric_transformation_page():
     if st.session_state.processed_image is None:
         st.session_state.processed_image = st.session_state.original_image.copy()
 
-    st.markdown("Apply geometric transformations to your image.")
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Rotate", "Flip", "Translation", "Scaling", "Crop"])
 
@@ -36,7 +59,8 @@ def render_geometric_transformation_page():
 
     # TAB 1: ROTATE
     with tab1:
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
         
         rotation_val = st.slider(
             "Rotation Angle", 0, 360,
@@ -46,17 +70,16 @@ def render_geometric_transformation_page():
         if rotation_val != st.session_state.rotation_angle:
             st.session_state.rotation_angle = rotation_val
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
         
         preview_image = get_preview_image()
-        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
-        st.markdown("### Image Preview")
         render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 2: FLIP 
     with tab2:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("Flip the image horizontally or vertically. Click the button to apply the flip.")
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
+        st.markdown("<p>Flip the image horizontally or vertically. Click the button to apply the flip.</p>", unsafe_allow_html=True)
         
         col_flip1, col_flip2, flip_spacer = st.columns([2, 2, 6]) 
 
@@ -69,17 +92,16 @@ def render_geometric_transformation_page():
             if st.button("↕ Flip Vertical", type="primary", use_container_width=True):
                 st.session_state.processed_image = cv2.flip(st.session_state.processed_image, 0)
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
         
         preview_image = get_preview_image()
-        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
-        st.markdown("### Image Preview")
         render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 3: TRANSLATION 
     with tab3:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("Shift the image position along the X and Y axes. Positive values move right/down, negative values move left/up.")
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
+        st.markdown("<p>Shift the image position along the X and Y axes. Positive values move right/down, negative values move left/up.</p>", unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -100,17 +122,16 @@ def render_geometric_transformation_page():
             if trans_y_val != st.session_state.translate_y:
                 st.session_state.translate_y = trans_y_val
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
         
         preview_image = get_preview_image()
-        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
-        st.markdown("### Image Preview")
         render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 4: SCALING 
     with tab4:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("Resize the image by adjusting the scale factor. Values below 1.0 shrink the image, above 1.0 enlarge it.")
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
+        st.markdown("<p>Resize the image by adjusting the scale factor. Values below 1.0 shrink the image, above 1.0 enlarge it.</p>", unsafe_allow_html=True)
         
         scale_val = st.slider(
             "Scale Factor", 0.1, 3.0, step=0.05,
@@ -120,17 +141,16 @@ def render_geometric_transformation_page():
         if scale_val != st.session_state.scale_factor:
             st.session_state.scale_factor = scale_val
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
         
         preview_image = get_preview_image()
-        st.markdown("<hr style='margin: 2.5rem 0;' />", unsafe_allow_html=True)
-        st.markdown("### Image Preview")
         render_image_preview(st.session_state.original_image, preview_image)
 
     # TAB 5: CROP 
     with tab5:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("Select an aspect ratio and adjust the cropping area by moving the frame. The image will be cropped to the selected ratio.")
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
+        st.markdown("<p>Select an aspect ratio and adjust the cropping area by moving the frame.</p>", unsafe_allow_html=True)
         
         col_dropdown = st.columns([1, 3])[0]
         with col_dropdown:
@@ -165,7 +185,7 @@ def render_geometric_transformation_page():
         base_crop_w, base_crop_h = get_crop_dimensions(w, h, target_ratio)
         
         # SCALE RATIO slider
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
         scale_val = st.slider(
             "Crop Scale (Zoom Out)", 
             0.3, 1.0, 
@@ -226,6 +246,7 @@ def render_geometric_transformation_page():
                     st.rerun()
             else:
                 st.caption("Vertical: centered")
+        st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### Crop Preview")
@@ -257,3 +278,12 @@ def render_geometric_transformation_page():
             title_left="Crop area preview (red box)",
             title_right="Cropped Result"
         )
+
+    st.markdown("<hr/>", unsafe_allow_html=True)
+    
+    # Reset and Save buttons
+    preview_image = get_preview_image()
+    render_reset_and_save_buttons(
+        reset_callback=lambda: None,
+        image_to_save=preview_image
+    )

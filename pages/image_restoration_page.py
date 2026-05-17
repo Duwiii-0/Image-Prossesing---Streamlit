@@ -1,13 +1,37 @@
 import streamlit as st
+import numpy as np
+from PIL import Image
 from utils.preview_helper import get_preview_image
-from utils.ui_helpers import render_image_preview
+from utils.ui_helpers import render_image_preview, render_reset_and_save_buttons, render_section_header
 
 
 def render_image_restoration_page():
+    render_section_header(
+        title="Image Restoration",
+        description="Restore and reduce noise in your image using spatial filtering techniques.",
+        icon="🩹"
+    )
+    
+    # Upload File
+    uploaded_file = st.file_uploader(
+        "Select an Image (JPG, PNG, BMP)",
+        type=["jpg", "png", "jpeg", "bmp"],
+        key="image_restoration_uploader"
+    )
+    
+    if uploaded_file is not None:
+        # Read image
+        image = Image.open(uploaded_file).convert('RGB')
+        image_np = np.array(image)
+        
+        st.session_state.original_image = image_np.copy()
+        st.session_state.processed_image = image_np.copy()
+    
     if st.session_state.original_image is None:
         st.markdown("""
-        <div class="custom-info-box">
-            <strong>Notice:</strong> Please upload an image via the Image Management menu before applying any enhancements.
+        <div style="background: rgba(99, 102, 241, 0.1); border: 1px dashed rgba(99, 102, 241, 0.4); padding: 2rem; text-align: center; border-radius: 12px; margin-top: 1rem;">
+            <span style="font-size: 2rem;">📸</span>
+            <p style="color: #94A3B8; margin-top: 0.5rem; font-weight: 500;">Please upload an image to begin.</p>
         </div>
         """, unsafe_allow_html=True)
         return
@@ -15,8 +39,7 @@ def render_image_restoration_page():
     if st.session_state.processed_image is None:
         st.session_state.processed_image = st.session_state.original_image.copy()
 
-    st.markdown("Restore and reduce noise in your image using spatial filtering techniques.")
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
 
     tab1, tab2, tab3 = st.tabs([
         "Gaussian Blur", 
@@ -25,11 +48,12 @@ def render_image_restoration_page():
     ])
 
     with tab1:
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
         st.markdown("""
-        **Gaussian Blur** - Smooths image using weighted average of neighboring pixels.
-        
-        *Best for reducing Gaussian noise. Blurs edges but creates smooth results.*
-        """)
+        <p><strong>Gaussian Blur</strong> - Smooths image using weighted average of neighboring pixels.</p>
+        <p style="font-size: 0.85rem; color: #64748B;"><em>Best for reducing Gaussian noise. Blurs edges but creates smooth results.</em></p>
+        """, unsafe_allow_html=True)
         
         kernel_size = st.slider(
             "Kernel Size", 
@@ -40,13 +64,18 @@ def render_image_restoration_page():
         if kernel_size != st.session_state.restoration_gaussian_kernel:
             st.session_state.restoration_gaussian_kernel = kernel_size
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        preview_image = get_preview_image()
+        render_image_preview(st.session_state.original_image, preview_image)
 
     with tab2:
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
         st.markdown("""
-        **Median Filter** - Replaces each pixel with the median value of its neighbors.
-        
-        *Excellent for salt & pepper noise. Preserves edges better than Gaussian blur.*
-        """)
+        <p><strong>Median Filter</strong> - Replaces each pixel with the median value of its neighbors.</p>
+        <p style="font-size: 0.85rem; color: #64748B;"><em>Excellent for salt & pepper noise. Preserves edges better than Gaussian blur.</em></p>
+        """, unsafe_allow_html=True)
         
         kernel_size = st.slider(
             "Kernel Size", 
@@ -57,13 +86,18 @@ def render_image_restoration_page():
         if kernel_size != st.session_state.restoration_median_kernel:
             st.session_state.restoration_median_kernel = kernel_size
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        preview_image = get_preview_image()
+        render_image_preview(st.session_state.original_image, preview_image)
 
     with tab3:
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="control-card">', unsafe_allow_html=True)
         st.markdown("""
-        **Salt & Pepper Noise Removal** - Specialized median filter for random white/black dots.
-        
-        *Specifically targets impulse noise. Most effective method for this noise type.*
-        """)
+        <p><strong>Salt & Pepper Noise Removal</strong> - Specialized median filter for random white/black dots.</p>
+        <p style="font-size: 0.85rem; color: #64748B;"><em>Specifically targets impulse noise. Most effective method for this noise type.</em></p>
+        """, unsafe_allow_html=True)
         
         kernel_size = st.slider(
             "Kernel Size", 
@@ -74,11 +108,16 @@ def render_image_restoration_page():
         if kernel_size != st.session_state.restoration_sp_kernel:
             st.session_state.restoration_sp_kernel = kernel_size
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        preview_image = get_preview_image()
+        render_image_preview(st.session_state.original_image, preview_image)
+
+    st.markdown("<hr/>", unsafe_allow_html=True)
     
-    st.markdown("<hr style='margin: 2rem 0;' />", unsafe_allow_html=True)
-    st.markdown("### Image Preview")
-
-    # Preview image using helper
+    # Reset and Save buttons
     preview_image = get_preview_image()
-
-    render_image_preview(st.session_state.original_image, preview_image)
+    render_reset_and_save_buttons(
+        reset_callback=lambda: None,
+        image_to_save=preview_image
+    )
