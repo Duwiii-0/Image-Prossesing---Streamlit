@@ -27,6 +27,19 @@ from image_processing.binary_edge_processing import (
     apply_morphology,
 )
 
+from image_processing.image_segmentation import (
+    apply_global_threshold,
+    apply_adaptive_threshold as apply_seg_adaptive_threshold,
+    apply_otsu_threshold,
+    apply_canny_edge,
+    apply_sobel_edge,
+    apply_laplacian_edge,
+    apply_simple_region_growing,
+    apply_kmeans_segmentation,
+    apply_contour_segmentation,
+    apply_watershed,
+)
+
 
 def apply_geometric_only(
     base_image,
@@ -101,12 +114,22 @@ def apply_all_operations(
     edge_log_sigma=1.0,
     morph_operation="Erosion",
     morph_kernel=3,
-    morph_iterations=1
+    morph_iterations=1,
+    segmentation_mode="none",  
+    seg_threshold_value=127,
+    seg_adaptive_method="mean",
+    seg_adaptive_block=11,
+    seg_adaptive_c=2,
+    seg_edge_low=50,
+    seg_edge_high=150,
+    seg_edge_kernel=3,
+    seg_sobel_direction="both",
+    seg_region_threshold=10,
+    seg_kmeans_k=3,
+    seg_contour_mode="external"
 ):
     """
-    Full pipeline: Restoration -> Geometric -> Enhancement -> Binary & Edge
-    
-    Binary & Edge hanya untuk preview, tidak mengubah processed_image.
+    Full pipeline: Restoration -> Geometric -> Enhancement -> Segmentation -> Binary & Edge
     """
     if base_image is None or not isinstance(base_image, np.ndarray):
         return None
@@ -150,7 +173,33 @@ def apply_all_operations(
     if sharpening > 0:
         img = apply_sharpening(img, strength=sharpening)
     
-    # STEP 4: BINARY & EDGE PROCESSING 
+    # STEP 4: IMAGE SEGMENTATION
+    if segmentation_mode == "threshold_global":
+        img = apply_global_threshold(img, threshold_value=seg_threshold_value)
+    elif segmentation_mode == "threshold_adaptive":
+        img = apply_seg_adaptive_threshold(img, method=seg_adaptive_method, block_size=seg_adaptive_block, c=seg_adaptive_c)
+    elif segmentation_mode == "threshold_otsu":
+        img = apply_otsu_threshold(img)
+    elif segmentation_mode == "edge_canny":
+        img = apply_canny_edge(img, low_threshold=seg_edge_low, high_threshold=seg_edge_high)
+    elif segmentation_mode == "edge_sobel":
+        img = apply_sobel_edge(img, kernel_size=seg_edge_kernel, direction=seg_sobel_direction)
+    elif segmentation_mode == "edge_laplacian":
+        img = apply_laplacian_edge(img, kernel_size=seg_edge_kernel)
+    elif segmentation_mode == "region_growing":
+        img = apply_simple_region_growing(img, threshold=seg_region_threshold)
+    elif segmentation_mode == "kmeans":
+        img = apply_kmeans_segmentation(img, k=seg_kmeans_k)
+    elif segmentation_mode == "contour":
+        img = apply_contour_segmentation(img, mode=seg_contour_mode)
+    elif segmentation_mode == "watershed":
+        img = apply_watershed(img)
+    
+    # Convert binary image (2D) to 3 channel
+    if len(img.shape) == 2:
+        img = np.stack([img] * 3, axis=2)
+    
+    # STEP 5: BINARY & EDGE PROCESSING 
     if binary_edge_mode == "threshold":
         img = apply_thresholding(
             img,

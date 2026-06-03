@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 from image_processing.image_enhancement import apply_histogram_equalization
+from utils.state_manager import reset_enhancement_state
 from utils.preview_helper import get_preview_image
 from utils.ui_helpers import render_image_preview, render_reset_and_save_buttons, render_section_header
 
@@ -72,8 +73,8 @@ def render_image_enhancement_page():
                 st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        preview_image = get_preview_image()
-        render_image_preview(st.session_state.original_image, preview_image)
+        # preview_image = get_preview_image()
+        # render_image_preview(st.session_state.original_image, preview_image)
 
     with tab2:
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
@@ -86,8 +87,8 @@ def render_image_enhancement_page():
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        preview_image = get_preview_image()
-        render_image_preview(st.session_state.original_image, preview_image)
+        # preview_image = get_preview_image()
+        # render_image_preview(st.session_state.original_image, preview_image)
 
     with tab3:
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
@@ -103,8 +104,8 @@ def render_image_enhancement_page():
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        preview_image = get_preview_image()
-        render_image_preview(st.session_state.original_image, preview_image)
+        # preview_image = get_preview_image()
+        # render_image_preview(st.session_state.original_image, preview_image)
 
     with tab4:
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
@@ -120,14 +121,16 @@ def render_image_enhancement_page():
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        preview_image = get_preview_image()
-        render_image_preview(st.session_state.original_image, preview_image)
+        # preview_image = get_preview_image()
+        # render_image_preview(st.session_state.original_image, preview_image)
+
 
     st.markdown("<hr/>", unsafe_allow_html=True)
     
     # Reset and Save buttons
     preview_image = get_preview_image()
+    render_image_preview(st.session_state.original_image, preview_image)
     render_reset_and_save_buttons(
-        reset_callback=lambda: None,
+        reset_callback=lambda: reset_enhancement_state(), 
         image_to_save=preview_image
     )

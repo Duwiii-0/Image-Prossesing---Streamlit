@@ -84,6 +84,38 @@ def init_session_state():
     if 'morph_iterations' not in st.session_state:
         st.session_state.morph_iterations = DEFAULT_MORPH_ITERATIONS
 
+    # Segmentation
+    if 'segmentation_mode' not in st.session_state:
+        st.session_state.segmentation_mode = "none"
+    if 'seg_threshold_mode' not in st.session_state:
+        st.session_state.seg_threshold_mode = DEFAULT_THRESHOLD_MODE
+    if 'seg_threshold_value' not in st.session_state:
+        st.session_state.seg_threshold_value = DEFAULT_THRESHOLD_VALUE
+    if 'seg_adaptive_method' not in st.session_state:
+        st.session_state.seg_adaptive_method = DEFAULT_ADAPTIVE_METHOD
+    if 'seg_adaptive_block' not in st.session_state:
+        st.session_state.seg_adaptive_block = DEFAULT_ADAPTIVE_BLOCK
+    if 'seg_adaptive_c' not in st.session_state:
+        st.session_state.seg_adaptive_c = DEFAULT_ADAPTIVE_C
+    if 'seg_edge_method' not in st.session_state:
+        st.session_state.seg_edge_method = DEFAULT_SEG_EDGE_METHOD
+    if 'seg_edge_low' not in st.session_state:
+        st.session_state.seg_edge_low = DEFAULT_SEG_EDGE_LOW
+    if 'seg_edge_high' not in st.session_state:
+        st.session_state.seg_edge_high = DEFAULT_SEG_EDGE_HIGH
+    if 'seg_edge_kernel' not in st.session_state:
+        st.session_state.seg_edge_kernel = DEFAULT_SEG_EDGE_KERNEL
+    if 'seg_sobel_direction' not in st.session_state:
+        st.session_state.seg_sobel_direction = DEFAULT_SEG_SOBEL_DIRECTION
+    if 'seg_region_method' not in st.session_state:
+        st.session_state.seg_region_method = DEFAULT_REGION_METHOD
+    if 'seg_region_threshold' not in st.session_state:
+        st.session_state.seg_region_threshold = DEFAULT_REGION_THRESHOLD
+    if 'seg_kmeans_k' not in st.session_state:
+        st.session_state.seg_kmeans_k = DEFAULT_KMEANS_K
+    if 'seg_contour_mode' not in st.session_state:
+        st.session_state.seg_contour_mode = DEFAULT_CONTOUR_MODE
+
 def reset_enhancement_state():
     """Reset only enhancement state to defaults"""
     st.session_state.brightness = DEFAULT_BRIGHTNESS
@@ -132,6 +164,25 @@ def reset_binary_edge_state():
     st.session_state.morph_kernel = DEFAULT_MORPH_KERNEL
     st.session_state.morph_iterations = DEFAULT_MORPH_ITERATIONS
 
+def reset_segmentation_state():
+    """Reset only segmentation state to defaults"""
+    st.session_state.segmentation_mode = "none"  
+    st.session_state.seg_threshold_mode = DEFAULT_THRESHOLD_MODE
+    st.session_state.seg_threshold_value = DEFAULT_THRESHOLD_VALUE
+    st.session_state.seg_adaptive_method = DEFAULT_ADAPTIVE_METHOD
+    st.session_state.seg_adaptive_block = DEFAULT_ADAPTIVE_BLOCK
+    st.session_state.seg_adaptive_c = DEFAULT_ADAPTIVE_C
+    st.session_state.seg_edge_method = DEFAULT_SEG_EDGE_METHOD
+    st.session_state.seg_edge_low = DEFAULT_SEG_EDGE_LOW
+    st.session_state.seg_edge_high = DEFAULT_SEG_EDGE_HIGH
+    st.session_state.seg_edge_kernel = DEFAULT_SEG_EDGE_KERNEL
+    st.session_state.seg_sobel_direction = DEFAULT_SEG_SOBEL_DIRECTION
+    st.session_state.seg_region_method = DEFAULT_REGION_METHOD
+    st.session_state.seg_region_threshold = DEFAULT_REGION_THRESHOLD
+    st.session_state.seg_kmeans_k = DEFAULT_KMEANS_K
+    st.session_state.seg_contour_mode = DEFAULT_CONTOUR_MODE
+    st.rerun()
+
 def reset_all_state():
     """Reset all state to defaults (keep images intact)"""
     reset_enhancement_state()
@@ -139,3 +190,4 @@ def reset_all_state():
     reset_crop_state()
     reset_restoration_state()
     reset_binary_edge_state()
+    reset_segmentation_state() 

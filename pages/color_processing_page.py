@@ -17,6 +17,23 @@ from utils.ui_helpers import render_reset_and_save_buttons, render_image_preview
 
 def render_color_processing_page():
     """Render Color Processing page"""
+
+# Reset color processing state
+    if 'color_processing_state' not in st.session_state:
+        st.session_state.color_processing_state = {
+            'operation': 'None',
+            'grayscale': False,
+            'channel_split': False,
+            'hue_shift': 0,
+            'saturation_scale': 1.0,
+            'value_scale': 1.0,
+            'invert': False,
+            'sepia_intensity': 0.0,
+            'posterize_levels': 4,
+            'red_shift': 0,
+            'green_shift': 0,
+            'blue_shift': 0,
+        }
     
     st.markdown("Adjust and manipulate colors in your image.")
     st.markdown("<br>", unsafe_allow_html=True)
@@ -35,23 +52,6 @@ def render_color_processing_page():
         
         st.session_state.original_image = image_np.copy()
         st.session_state.processed_image = image_np.copy()
-        
-        # Reset color processing state
-        if 'color_processing_state' not in st.session_state:
-            st.session_state.color_processing_state = {
-                'operation': 'None',
-                'grayscale': False,
-                'channel_split': False,
-                'hue_shift': 0,
-                'saturation_scale': 1.0,
-                'value_scale': 1.0,
-                'invert': False,
-                'sepia_intensity': 0.0,
-                'posterize_levels': 4,
-                'red_shift': 0,
-                'green_shift': 0,
-                'blue_shift': 0,
-            }
     
     if st.session_state.processed_image is not None:
         st.markdown("<hr style='margin: 2rem 0; border: none; border-top: 1px solid #E2E8F0;' />", unsafe_allow_html=True)
@@ -182,10 +182,14 @@ def render_color_processing_page():
             ch_col1, ch_col2, ch_col3 = st.columns(3)
             with ch_col1:
                     st.image(r, caption="Red Channel", use_container_width=True)
-                with ch_col2:
+            with ch_col2:
                     st.image(g, caption="Green Channel", use_container_width=True)
-                with ch_col3:
+            with ch_col3:
                     st.image(b, caption="Blue Channel", use_container_width=True)
+        hue = st.session_state.color_processing_state['hue_shift']
+        sat = st.session_state.color_processing_state['saturation_scale']
+        bright = st.session_state.color_processing_state['value_scale']
+
         if hue != 0 or sat != 1.0 or bright != 1.0:
             processed = apply_hsv_adjustment(processed, hue, sat, bright)
         

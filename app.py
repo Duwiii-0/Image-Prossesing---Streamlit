@@ -9,6 +9,7 @@ from pages.geometric_transformation_page import render_geometric_transformation_
 from pages.image_restoration_page import render_image_restoration_page
 from pages.binary_edge_processing_page import render_binary_edge_processing_page
 from pages.color_processing_page import render_color_processing_page
+from pages.image_segmentation_page import render_image_segmentation_page
 
 from utils.state_manager import init_session_state, reset_all_state
 from utils.ui_helpers import load_css, render_reset_and_save_buttons, render_image_preview
@@ -46,7 +47,8 @@ with st.sidebar:
         ("Geometric Transformation", "📐"),
         ("Image Restoration", "🩹"),
         ("Binary & Edge Processing", "⬛"),
-        ("Color Processing", "🌈")
+        ("Color Processing", "🌈"),
+        ("Image Segmentation", "✂️")
     ]
     
     for page_name, icon in nav_items:
@@ -95,3 +97,7 @@ elif menu == "Binary & Edge Processing":
 # 5. COLOR PROCESSING PAGE
 elif menu == "Color Processing":
     render_color_processing_page()
+
+# 6. IMAGE SEGMENTATION PAGE
+elif menu == "Image Segmentation":
+    render_image_segmentation_page()

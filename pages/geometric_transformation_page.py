@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from image_processing.geometric_transformation import get_crop_dimensions
+from utils.state_manager import reset_geometric_state, reset_crop_state
 from utils.preview_helper import get_preview_image
 from utils.ui_helpers import render_image_preview, render_reset_and_save_buttons, render_section_header
 from utils.constants import RATIO_OPTIONS
@@ -283,7 +284,14 @@ def render_geometric_transformation_page():
     
     # Reset and Save buttons
     preview_image = get_preview_image()
+    
+    def reset_geometric():
+        reset_geometric_state()
+        reset_crop_state()
+        st.session_state.processed_image = st.session_state.original_image.copy()
+        st.rerun()
+
     render_reset_and_save_buttons(
-        reset_callback=lambda: None,
+        reset_callback=reset_geometric,
         image_to_save=preview_image
     )

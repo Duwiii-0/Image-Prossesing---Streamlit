@@ -210,14 +210,11 @@ header {background: transparent !important;}
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 1rem;
-    position: relative;
     overflow: hidden;
+    margin-bottom: 15px; 
 }
 
 .image-preview-badge {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     padding: 0.25rem 0.75rem;
@@ -226,7 +223,12 @@ header {background: transparent !important;}
     font-weight: 600;
     color: #FFF;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 10;
+    display: inline-block;
+    margin-bottom: 10px;  
+}
+
+.stImage {
+    margin-top: 0;
 }
 
 /* Custom Section Headers */

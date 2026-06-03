@@ -45,6 +45,20 @@ def get_base_params():
         'morph_operation': st.session_state.morph_operation,
         'morph_kernel': st.session_state.morph_kernel,
         'morph_iterations': st.session_state.morph_iterations,
+
+        # Segmentation
+        'segmentation_mode': st.session_state.segmentation_mode, 
+        'seg_threshold_value': st.session_state.seg_threshold_value,
+        'seg_adaptive_method': st.session_state.seg_adaptive_method,
+        'seg_adaptive_block': st.session_state.seg_adaptive_block,
+        'seg_adaptive_c': st.session_state.seg_adaptive_c,
+        'seg_edge_low': st.session_state.seg_edge_low,
+        'seg_edge_high': st.session_state.seg_edge_high,
+        'seg_edge_kernel': st.session_state.seg_edge_kernel,
+        'seg_sobel_direction': st.session_state.seg_sobel_direction,
+        'seg_region_threshold': st.session_state.seg_region_threshold,
+        'seg_kmeans_k': st.session_state.seg_kmeans_k,
+        'seg_contour_mode': st.session_state.seg_contour_mode,
     }
 
 def get_preview_image(extra_params=None):

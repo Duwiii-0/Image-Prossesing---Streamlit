@@ -41,12 +41,35 @@ DEFAULT_MORPH_OPERATION = "Erosion"
 DEFAULT_MORPH_KERNEL = 3
 DEFAULT_MORPH_ITERATIONS = 1
 
+# IMAGE SEGMENTATION
+# Threshold
+DEFAULT_THRESHOLD_MODE = "Global"
+DEFAULT_THRESHOLD_VALUE = 127
+DEFAULT_ADAPTIVE_METHOD = "mean"
+DEFAULT_ADAPTIVE_BLOCK = 11
+DEFAULT_ADAPTIVE_C = 2
+# Edge
+DEFAULT_SEG_EDGE_METHOD = "Canny"
+DEFAULT_SEG_EDGE_LOW = 50
+DEFAULT_SEG_EDGE_HIGH = 150
+DEFAULT_SEG_EDGE_KERNEL = 3
+DEFAULT_SEG_SOBEL_DIRECTION = "both"
+# Region
+DEFAULT_REGION_METHOD = "Region Growing"
+DEFAULT_REGION_THRESHOLD = 10
+DEFAULT_KMEANS_K = 3
+DEFAULT_CONTOUR_MODE = "external"
+
 # Options for dropdowns
 THRESHOLD_METHODS = ["Binary", "Binary Inverse"]
 ADAPTIVE_METHODS = ["Mean", "Gaussian"]
 EDGE_METHODS = ["Canny", "Sobel", "Prewitt", "Roberts", "Laplacian", "LoG"]
 SOBEL_DIRECTIONS = ["X", "Y", "Both"]
 MORPH_OPERATIONS = ["Erosion", "Dilation"]
+SEG_THRESHOLD_METHODS = ["Global", "Adaptive", "Otsu"]
+SEG_EDGE_METHODS = ["Canny", "Sobel", "Laplacian"]
+SEG_REGION_METHODS = ["Region Growing", "K-Means", "Contour", "Watershed"]
+SEG_ADAPTIVE_METHODS = ["mean", "gaussian"]
 
 # Ratio options for crop
 RATIO_OPTIONS = {

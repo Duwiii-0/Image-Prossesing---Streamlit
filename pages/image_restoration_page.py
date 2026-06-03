@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 from utils.preview_helper import get_preview_image
+from utils.state_manager import reset_restoration_state
 from utils.ui_helpers import render_image_preview, render_reset_and_save_buttons, render_section_header
 
 
@@ -118,6 +119,6 @@ def render_image_restoration_page():
     # Reset and Save buttons
     preview_image = get_preview_image()
     render_reset_and_save_buttons(
-        reset_callback=lambda: None,
+        reset_callback=lambda: reset_restoration_state(),
         image_to_save=preview_image
     )
