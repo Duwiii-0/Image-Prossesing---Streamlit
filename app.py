@@ -62,6 +62,15 @@ with st.sidebar:
             st.rerun()
             
     st.markdown('</div>', unsafe_allow_html=True)
+
+    # Reset Button Global
+    st.markdown("<hr style='margin: 1rem 0; border-color: rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
+    
+    if st.button("Reset All", use_container_width=True):
+        reset_all_state()
+        if st.session_state.original_image is not None:
+            st.session_state.processed_image = st.session_state.original_image.copy()
+        st.rerun()
     
     # Active Image Badge
     if st.session_state.original_image is not None:

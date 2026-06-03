@@ -164,6 +164,23 @@ def reset_binary_edge_state():
     st.session_state.morph_kernel = DEFAULT_MORPH_KERNEL
     st.session_state.morph_iterations = DEFAULT_MORPH_ITERATIONS
 
+def reset_color_processing_state():
+    """Reset only color processing state to defaults"""
+    st.session_state.color_processing_state = {
+        'operation': 'None',
+        'grayscale': False,
+        'channel_split': False,
+        'hue_shift': 0,
+        'saturation_scale': 1.0,
+        'value_scale': 1.0,
+        'invert': False,
+        'sepia_intensity': 0.0,
+        'posterize_levels': 4,
+        'red_shift': 0,
+        'green_shift': 0,
+        'blue_shift': 0,
+    }
+
 def reset_segmentation_state():
     """Reset only segmentation state to defaults"""
     st.session_state.segmentation_mode = "none"  
@@ -190,4 +207,4 @@ def reset_all_state():
     reset_crop_state()
     reset_restoration_state()
     reset_binary_edge_state()
-    reset_segmentation_state() 
+    reset_color_processing_state()
