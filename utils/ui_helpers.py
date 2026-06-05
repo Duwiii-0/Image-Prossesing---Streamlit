@@ -3,8 +3,11 @@ import io
 from PIL import Image
 
 def load_css():
-    """Load custom CSS from style.css file"""
+    """Load custom CSS from style.css file and inject Tailwind CSS"""
     try:
+        # Inject Tailwind CSS Play CDN
+        st.markdown('<script src="https://cdn.tailwindcss.com"></script>', unsafe_allow_html=True)
+        
         with open("style.css") as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
             
@@ -15,42 +18,54 @@ def load_css():
             .stApp * {
                 transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
             }
+            
+            /* Ensure Tailwind classes don't conflict with Streamlit padding where not wanted */
+            .tw-container {
+                all: initial;
+                font-family: 'Inter', sans-serif;
+            }
         </style>
         """, unsafe_allow_html=True)
     except:
         pass
 
+def render_tailwind_card(title, content, icon=""):
+    """Example of a custom component using Tailwind CSS classes - Minimalist Version"""
+    st.markdown(f"""
+    <div class="p-5 max-w-sm mx-auto bg-slate-900 rounded border border-slate-800 hover:border-blue-600 transition-all duration-200">
+      <div>
+        <div class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-1">{title}</div>
+        <p class="text-slate-300 text-sm leading-relaxed">{content}</p>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 def render_section_header(title, description=None, icon=None):
-    """Render a styled section header with optional icon and description"""
-    icon_html = f'<div class="section-icon">{icon}</div>' if icon else ''
-    
+    """Render a styled section header with optional description (No Emoji)"""
     html = f"""
-    <div class="section-header">
-        {icon_html}
-        <div>
-            <h3 style="margin-bottom: 0;">{title}</h3>
-            {f'<p style="margin-bottom: 0; margin-top: 0.25rem;">{description}</p>' if description else ''}
-        </div>
+    <div style="margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #23272E;">
+        <h3 style="margin-bottom: 0.25rem; font-weight: 600; color: #F8FAFC;">{title}</h3>
+        {f'<p style="margin-bottom: 0; color: #64748B; font-size: 0.85rem;">{description}</p>' if description else ''}
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)
 
-def render_image_preview(image_left, image_right, title_left="Original Reference", title_right="Modified Output"):
+def render_image_preview(image_left, image_right, title_left="REFERENCE", title_right="OUTPUT"):
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"""
         <div class="image-preview-card">
             <div class="image-preview-badge">{title_left}</div>
-        </div>
         """, unsafe_allow_html=True)
         st.image(image_left, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     with col2:
         st.markdown(f"""
         <div class="image-preview-card">
-            <div class="image-preview-badge" style="background: rgba(99, 102, 241, 0.8); border-color: rgba(99, 102, 241, 1);">{title_right}</div>
-        </div>
+            <div class="image-preview-badge" style="color: #0071E3;">{title_right}</div>
         """, unsafe_allow_html=True)
         st.image(image_right, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 def create_download_button(image, filename="edited_image", button_text="Save Edited Image"):
     """Create download button for image with format selection"""

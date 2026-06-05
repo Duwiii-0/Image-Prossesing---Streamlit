@@ -1,346 +1,154 @@
-/* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* Global Typography & Background */
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
+:root {
+    --apple-bg: #FBFBFD;
+    --apple-sidebar: #F5F5F7;
+    --apple-card: #FFFFFF;
+    --apple-border: rgba(0, 0, 0, 0.08);
+    --apple-text: #1D1D1F;
+    --apple-secondary: #86868B;
+    --apple-blue: #0071E3;
+    --apple-shadow: 0 8px 30px rgba(0,0,0,0.04);
 }
 
-/* Base App Styling (Dark Mode) */
+/* Base Override */
 .stApp {
-    background-color: #0D0F17;
-    background-image: 
-        radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 85% 30%, rgba(34, 211, 238, 0.05) 0%, transparent 50%);
-    color: #F1F5F9;
+    background-color: var(--apple-bg);
+    color: var(--apple-text);
 }
 
-/* Clean Layout Padding */
 .block-container {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-    max-width: 1200px;
+    max-width: 100% !important;
+    padding: 0 !important;
 }
 
-/* Sidebar Styling - Dark & Glass */
+/* Floating Navigation Sidebar */
 section[data-testid="stSidebar"] {
-    background-color: #13151F !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background-color: var(--apple-sidebar) !important;
+    border-right: 1px solid var(--apple-border) !important;
+    width: 240px !important;
 }
 
-/* Override default sidebar width to be a bit narrower if needed */
-section[data-testid="stSidebar"] > div {
-    padding-top: 2rem;
+section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+    gap: 0.5rem !important;
 }
 
-.sidebar-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin-bottom: 0.25rem;
-    letter-spacing: -0.025em;
-    background: linear-gradient(135deg, #6366F1 0%, #22D3EE 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.sidebar-header {
+    padding: 2rem 1rem;
+    border-bottom: 1px solid var(--apple-border);
+    margin-bottom: 1.5rem;
+}
+
+/* Custom Pro Navigation Buttons */
+.stButton > button {
+    width: 100% !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    color: var(--apple-secondary) !important;
+    text-align: left !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.stButton > button:hover {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+    color: var(--apple-text) !important;
+}
+
+.stButton > button[kind="primary"] {
+    background-color: #FFFFFF !important;
+    color: var(--apple-blue) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+    font-weight: 600 !important;
+}
+
+/* Application Toolbar (Top Bar) */
+.top-bar {
+    height: 60px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--apple-border);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-.sidebar-subtitle {
-    font-size: 0.85rem;
-    color: #94A3B8;
-    margin-bottom: 2rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-/* Navigation Custom Buttons (Using st.markdown + st.button combos) */
-.nav-item-container {
+/* Layout Stage */
+.stage-container {
+    background: #EEEEF0;
+    padding: 3rem;
+    min-height: calc(100vh - 60px);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Image Canvas */
+.canvas-wrapper {
+    background: white;
+    padding: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    position: relative;
+    max-width: 90%;
+}
+
+/* Inspector Panel - Seamless Alignment */
+.inspector-panel {
+    background: white;
+    border-left: 1px solid var(--apple-border);
+    height: calc(100vh - 60px); /* Viewport minus top-bar */
+    padding: 2rem 1.5rem;
+    position: sticky;
+    top: 60px; /* Starts exactly below top-bar */
+    overflow-y: auto;
+}
+
+/* Force-remove column gaps for a seamless Look */
+[data-testid="column"] {
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+div[data-testid="stHorizontalBlock"] {
+    gap: 0 !important;
+}
+
+/* Section Styling */
+.section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--apple-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     margin-bottom: 1.5rem;
+    display: block;
 }
 
-.nav-btn {
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    background: transparent;
-    border: 1px solid transparent;
-    color: #94A3B8;
-    font-weight: 500;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.nav-btn:hover {
-    background: rgba(255, 255, 255, 0.03);
-    color: #F1F5F9;
-}
-
-.nav-btn.active {
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    color: #6366F1;
-}
-
-/* Hide default radio buttons completely to use our custom nav */
-[data-testid="stRadio"] {
-    display: none;
-}
-
-/* Streamlit Native Buttons Override */
-.stButton>button {
-    background-color: rgba(255, 255, 255, 0.03) !important;
-    color: #F1F5F9 !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    font-size: 0.9rem !important;
-    padding: 0.5rem 1rem !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-}
-
-.stButton>button:hover {
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    transform: translateY(-1px);
-}
-
-.stButton>button:active {
-    transform: translateY(0);
-    background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Primary CTA Button override */
-.stButton>button[kind="primary"] {
-    background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%) !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
-}
-
-.stButton>button[kind="primary"]:hover {
-    background: linear-gradient(135deg, #818CF8 0%, #6366F1 100%) !important;
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4) !important;
-    transform: translateY(-2px);
-}
-
-/* Target text inside buttons to ensure color consistency */
-.stButton>button p {
-    color: inherit !important;
-}
-
-/* Hide Streamlit Branding */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {background: transparent !important;}
-
-/* Tabs Styling */
-.stTabs [data-baseweb="tab-list"] {
-    gap: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: transparent;
-}
-.stTabs [data-baseweb="tab"] {
-    height: 3rem;
-    white-space: pre-wrap;
-    background-color: transparent;
-    border-radius: 0;
-    gap: 1rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    font-weight: 500;
-    color: #94A3B8;
-}
-.stTabs [aria-selected="true"] {
-    color: #F1F5F9 !important;
-    border-bottom-color: #6366F1 !important;
-}
-.stTabs [data-baseweb="tab-highlight"] {
-    background-color: #6366F1 !important;
-}
-
-/* Upload Component Styling - Glassmorphism */
-[data-testid="stFileUploadDropzone"] {
-    background-color: rgba(19, 21, 31, 0.6) !important;
-    border: 1px dashed rgba(255, 255, 255, 0.15) !important;
-    border-radius: 12px !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s ease !important;
-}
-[data-testid="stFileUploadDropzone"]:hover {
-    border-color: #6366F1 !important;
-    background-color: rgba(99, 102, 241, 0.05) !important;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
-}
-[data-testid="stFileUploadDropzone"] section {
-    color: #F1F5F9 !important;
-}
-
-/* File Uploader small text */
-.stFileUploader small {
-    color: #94A3B8 !important;
-}
-
-/* Generic Cards / Containers for controls */
-.control-card {
-    background-color: rgba(19, 21, 31, 0.7);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 1.5rem;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-    margin-bottom: 1.5rem;
-}
-
-/* Image Preview Cards */
-.image-preview-card {
-    background-color: rgba(19, 21, 31, 0.5);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 1rem;
-    overflow: hidden;
-    margin-bottom: 15px; 
-}
-
-.image-preview-badge {
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #FFF;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: inline-block;
-    margin-bottom: 10px;  
-}
-
-.stImage {
-    margin-top: 0;
-}
-
-/* Custom Section Headers */
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-.section-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background: rgba(99, 102, 241, 0.15);
-    color: #6366F1;
-    font-size: 1.2rem;
-}
-
-/* Typography */
-h1 {
-    font-size: 2.5rem !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.025em !important;
-    color: #F8FAFC !important;
-    margin-bottom: 0.5rem !important;
-}
-h2 {
-    font-size: 1.75rem !important;
+/* Slider & Select Overrides */
+[data-testid="stSlider"] label, [data-testid="stSelectbox"] label {
+    font-size: 0.75rem !important;
     font-weight: 600 !important;
-    letter-spacing: -0.025em !important;
-    color: #F1F5F9 !important;
-}
-h3 {
-    font-size: 1.25rem !important;
-    font-weight: 600 !important;
-    color: #E2E8F0 !important;
-}
-p {
-    color: #94A3B8;
-    font-size: 0.95rem;
-    line-height: 1.6;
+    color: var(--apple-text) !important;
 }
 
-/* Selectbox / Dropdown Styling */
-[data-testid="stSelectbox"] label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #E2E8F0;
-    margin-bottom: 0.25rem;
+div[data-baseweb="slider"] > div {
+    height: 2px !important;
+    background-color: var(--apple-border) !important;
 }
 
-[data-testid="stSelectbox"] div[data-baseweb="select"] {
-    background-color: rgba(19, 21, 31, 0.8) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-[data-testid="stSelectbox"] div[data-baseweb="select"]:hover {
-    border-color: #6366F1 !important;
-}
-
-[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
-    background-color: transparent !important;
-    color: #F1F5F9 !important;
-}
-
-/* Dropdown menu styling */
-div[data-baseweb="popover"] ul {
-    background-color: #1E293B !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-}
-
-div[data-baseweb="popover"] li {
-    color: #E2E8F0 !important;
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
-}
-
-div[data-baseweb="popover"] li:hover {
-    background-color: rgba(99, 102, 241, 0.1) !important;
-}
-
-div[data-baseweb="popover"] li[aria-selected="true"] {
-    background-color: rgba(99, 102, 241, 0.2) !important;
-    color: #6366F1 !important;
-    font-weight: 500;
-}
-
-/* Slider Customization */
-div[data-baseweb="slider"] {
-    margin-top: 1rem;
-}
-div[data-baseweb="slider"] > div > div {
-    background-color: #6366F1 !important; /* Track filled color */
-}
-div[data-baseweb="slider"] > div > div[data-testid="stTickBar"] {
-    background-color: rgba(255, 255, 255, 0.1) !important; /* Track unfilled color */
-}
 div[data-baseweb="slider"] [role="slider"] {
-    background-color: #FFFFFF !important;
-    border: 2px solid #6366F1 !important;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+    width: 18px !important;
+    height: 18px !important;
+    border: 1px solid var(--apple-border) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
 }
 
-/* Markdown hr styling */
-hr {
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    margin: 2rem 0 !important;
-}
+/* Hide Decorations */
+header, footer { display: none !important; }
