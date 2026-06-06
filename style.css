@@ -17,9 +17,16 @@
     color: var(--apple-text);
 }
 
+[data-testid="stHeader"] {
+    display: none;
+}
+
 .block-container {
     max-width: 100% !important;
-    padding: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 /* Floating Navigation Sidebar */
@@ -78,41 +85,51 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
     top: 0;
     z-index: 1000;
 }
-
-/* Layout Stage */
-.stage-container {
-    background: #EEEEF0;
-    padding: 3rem;
-    min-height: calc(100vh - 60px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Layout Stage & Inspector Fixes */
+[data-testid="stHorizontalBlock"] {
+    gap: 0 !important;
 }
 
-/* Image Canvas */
-.canvas-wrapper {
-    background: white;
-    padding: 12px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-    border-radius: 4px;
-    position: relative;
-    max-width: 90%;
+/* Style the Left Column (Stage) */
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1),
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) > div,
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) [data-testid="stVerticalBlock"] {
+    background-color: #E5E5EA !important;
+    min-height: 100vh;
 }
 
-/* Inspector Panel - Seamless Alignment */
-.inspector-panel {
-    background: white;
-    border-left: 1px solid var(--apple-border);
-    height: calc(100vh - 60px); /* Viewport minus top-bar */
-    padding: 2rem 1.5rem;
-    position: sticky;
-    top: 60px; /* Starts exactly below top-bar */
-    overflow-y: auto;
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding-top: 3rem !important;
 }
+
+/* Style the Image inside Stage Column */
+[data-testid="column"] [data-testid="stImage"] {
+    background: white !important;
+    padding: 12px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
+    border-radius: 12px !important;
+    margin: 0 auto !important;
+}
+
+/* Ensure the image container doesn't force scroll */
+[data-testid="stVerticalBlock"] {
+    gap: 0 !important;
+}
+
+/* Style the Right Column (Inspector) */
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {
+    background: white !important;
+    border-left: 1px solid var(--apple-border) !important;
+    min-height: 100vh;
+    padding: 2rem 1.5rem !important;
+}
+
 
 /* Force-remove column gaps for a seamless Look */
 [data-testid="column"] {
-    width: 100% !important;
     padding: 0 !important;
 }
 

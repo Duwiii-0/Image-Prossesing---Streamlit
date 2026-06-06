@@ -73,12 +73,10 @@ st.markdown(f"""
 col_stage, col_inspector = st.columns([3, 1], gap="small")
 
 with col_stage:
-    st.markdown('<div class="stage-container">', unsafe_allow_html=True)
-    
     if st.session_state.original_image is None:
         # Empty State for Stage
         st.markdown("""
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #86868B;">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #86868B; background: #EEEEF0; padding: 3rem;">
             <div style="font-size: 3rem; margin-bottom: 1.5rem; opacity: 0.3;">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -91,7 +89,33 @@ with col_stage:
         </div>
         """, unsafe_allow_html=True)
     else:
-        # Render main content based on page
+        # --- IMAGE PREVIEW IN STAGE (SINGLE OUTPUT ONLY) ---
+        preview_image = get_preview_image()
+        # Create a "focus" layout with padding columns to shrink the image
+        col_p1, col_focus, col_p2 = st.columns([1, 2, 1])
+        with col_focus:
+            st.markdown('<div style="height: 2rem;"></div>', unsafe_allow_html=True)
+            st.image(preview_image, use_container_width=True)
+
+with col_inspector:
+    # 0. IMAGE UPLOAD SECTION
+    st.markdown('<span class="section-label">Import Asset</span>', unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png", "bmp"], label_visibility="collapsed")
+    
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        if image.mode == 'RGBA': image = image.convert('RGB')
+        img_array = np.array(image)
+        if st.session_state.original_image is None or not np.array_equal(st.session_state.original_image, img_array):
+            st.session_state.original_image = img_array
+            st.session_state.processed_image = img_array.copy()
+            st.rerun()
+
+    st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+
+    # 1. PAGE-SPECIFIC CONTROLS (NOW IN INSPECTOR)
+    if st.session_state.original_image is not None:
+        st.markdown('<span class="section-label">Tool Settings</span>', unsafe_allow_html=True)
         if st.session_state.current_page == "Image Enhancement":
             render_image_enhancement_page()
         elif st.session_state.current_page == "Geometric Transformation":
@@ -105,39 +129,7 @@ with col_stage:
         elif st.session_state.current_page == "Image Segmentation":
             render_image_segmentation_page()
         
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col_inspector:
-    st.markdown('<div class="inspector-panel">', unsafe_allow_html=True)
-    
-    # 0. IMAGE UPLOAD SECTION (NEW LOCATION)
-    st.markdown('<span class="section-label">Import Asset</span>', unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png", "bmp"], label_visibility="collapsed")
-    
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        if image.mode == 'RGBA': image = image.convert('RGB')
-        img_array = np.array(image)
-        if st.session_state.original_image is None or not np.array_equal(st.session_state.original_image, img_array):
-            st.session_state.original_image = img_array
-            st.session_state.processed_image = img_array.copy()
-            st.rerun()
-
-    st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
-    
-    # 1. THUMBNAIL PREVIEW
-    st.markdown('<span class="section-label">Active Image</span>', unsafe_allow_html=True)
-    if st.session_state.processed_image is not None:
-        # Mini thumbnail for quick reference
-        st.image(st.session_state.processed_image, use_container_width=True)
-    else:
-        st.markdown("""
-        <div style="aspect-ratio: 16/9; background: #F5F5F7; border: 1px dashed rgba(0,0,0,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #86868B; font-size: 0.75rem;">
-            No Active Image
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
 
     # 2. GLOBAL EXPORT SECTION
     st.markdown('<span class="section-label">Export</span>', unsafe_allow_html=True)
@@ -193,5 +185,3 @@ with col_inspector:
             <div style="font-size: 0.75rem; color: #86868B; margin-top: 4px;">Color Space: RGB</div>
         </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
