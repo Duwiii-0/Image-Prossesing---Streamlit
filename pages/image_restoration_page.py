@@ -1,10 +1,7 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
-from utils.preview_helper import get_preview_image
 from utils.state_manager import reset_restoration_state
-from utils.ui_helpers import render_image_preview, render_reset_and_save_buttons, render_section_header
-
 
 def render_image_restoration_page():
     tab1, tab2, tab3 = st.tabs([

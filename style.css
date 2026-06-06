@@ -29,53 +29,133 @@
     padding-right: 0 !important;
 }
 
-/* Floating Navigation Sidebar */
+/* Sidebar Styling */
 section[data-testid="stSidebar"] {
     background-color: var(--apple-sidebar) !important;
     border-right: 1px solid var(--apple-border) !important;
     width: 240px !important;
+    overflow: hidden !important; /* Keep left navigation sidebar fixed */
 }
 
-section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-    gap: 0.5rem !important;
+/* Disable Global Scrolling */
+html, body, .stApp, .main, [data-testid="stMain"] {
+    overflow: hidden !important;
+    height: 100vh !important;
 }
 
-.sidebar-header {
-    padding: 2rem 1rem;
-    border-bottom: 1px solid var(--apple-border);
-    margin-bottom: 1.5rem;
+.block-container {
+    height: 100vh !important;
+    padding: 0 !important;
+    overflow: hidden !important;
 }
 
-/* Custom Pro Navigation Buttons */
-.stButton > button {
+/* --- NEW FIXED & SCROLLABLE LAYOUT --- */
+
+/* Main Container: No Scroll */
+[data-testid="stAppViewContainer"] {
+    overflow: hidden !important;
+}
+
+/* Outer Horizontal Layout Container - LOCKED to remaining viewport height */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) {
+    position: relative !important;
+    height: calc(100vh - 60px) !important;
+    min-height: calc(100vh - 60px) !important;
+    max-height: calc(100vh - 60px) !important;
     width: 100% !important;
-    background-color: transparent !important;
-    border: none !important;
-    border-radius: 8px !important;
-    padding: 10px 14px !important;
-    font-size: 0.85rem !important;
-    font-weight: 500 !important;
-    color: var(--apple-secondary) !important;
-    text-align: left !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden !important;
 }
 
-.stButton > button:hover {
-    background-color: rgba(0, 0, 0, 0.03) !important;
-    color: var(--apple-text) !important;
+/* Stage (Left Column Wrapper) - LOCKED */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(1),
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(1) {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 75% !important;
+    height: 100% !important;
+    background-color: #E5E5EA !important;
+    overflow: hidden !important;
+    padding: 0 !important;
 }
 
-.stButton > button[kind="primary"] {
-    background-color: #FFFFFF !important;
-    color: var(--apple-blue) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+/* Force gray background in stage for all nested elements and center them */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(1) [data-testid="stVerticalBlock"],
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(1) [data-testid="stVerticalBlock"] {
+    background-color: #E5E5EA !important;
+    height: 100% !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Inspector (Right Column Wrapper) - SCROLLABLE */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2),
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 25% !important;
+    height: 100% !important;
+    background-color: white !important;
+    border-left: 1px solid var(--apple-border) !important;
+    overflow-y: auto !important; /* THIS ENABLES SCROLL */
+    overflow-x: hidden !important;
+    padding: 2rem 1.5rem !important;
+    display: block !important;
+}
+
+/* Fix text visibility in white inspector */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) label,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) p,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) span,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) .stMarkdown,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) label,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) p,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) span,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) .stMarkdown {
+    color: #1D1D1F !important;
+}
+
+/* Fix Slider titles visibility */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) [data-testid="stWidgetLabel"] p,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) [data-testid="stWidgetLabel"] p {
+    color: #1D1D1F !important;
     font-weight: 600 !important;
 }
 
-/* Application Toolbar (Top Bar) */
+/* Image Card (only if it's the output image) */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(1) [data-testid="stImage"],
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(1) [data-testid="stImage"] {
+    background: white !important;
+    padding: 12px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
+    border-radius: 12px !important;
+    margin: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    max-width: 90% !important;
+    max-height: 80% !important;
+}
+
+/* Keep the image inside stImage bounded and centered with object-fit contain */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(1) [data-testid="stImage"] img,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(1) [data-testid="stImage"] img {
+    max-width: 100% !important;
+    max-height: 70vh !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 6px !important;
+}
+
+/* Top Bar Styling */
 .top-bar {
     height: 60px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--apple-border);
     display: flex;
@@ -85,87 +165,46 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
     top: 0;
     z-index: 1000;
 }
-/* Layout Stage & Inspector Fixes */
-[data-testid="stHorizontalBlock"] {
-    gap: 0 !important;
+
+/* Section Labels */
+.section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--apple-secondary) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+    display: block;
 }
 
-/* Style the Left Column (Stage) */
-[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1),
-[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) > div,
-[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) [data-testid="stVerticalBlock"] {
-    background-color: #E5E5EA !important;
-    min-height: 100vh;
+/* Force Single Column for Controls in Inspector */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) [data-testid="column"],
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) [data-testid="column"] {
+    width: 100% !important;
+    flex: none !important;
+    padding: 0 !important;
 }
 
-[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    padding-top: 3rem !important;
-}
-
-/* Style the Image inside Stage Column */
-[data-testid="column"] [data-testid="stImage"] {
+/* Image Card in Stage */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(1) [data-testid="stImage"],
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(1) [data-testid="stImage"] {
     background: white !important;
     padding: 12px !important;
     box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
     border-radius: 12px !important;
-    margin: 0 auto !important;
+    margin: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    max-width: 90% !important;
+    max-height: 80% !important;
 }
 
-/* Ensure the image container doesn't force scroll */
-[data-testid="stVerticalBlock"] {
-    gap: 0 !important;
+/* Sidebar Nav Buttons */
+.stButton > button {
+    width: 100% !important;
+    border-radius: 8px !important;
 }
 
-/* Style the Right Column (Inspector) */
-[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {
-    background: white !important;
-    border-left: 1px solid var(--apple-border) !important;
-    min-height: 100vh;
-    padding: 2rem 1.5rem !important;
-}
-
-
-/* Force-remove column gaps for a seamless Look */
-[data-testid="column"] {
-    padding: 0 !important;
-}
-
-div[data-testid="stHorizontalBlock"] {
-    gap: 0 !important;
-}
-
-/* Section Styling */
-.section-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--apple-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 1.5rem;
-    display: block;
-}
-
-/* Slider & Select Overrides */
-[data-testid="stSlider"] label, [data-testid="stSelectbox"] label {
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
-    color: var(--apple-text) !important;
-}
-
-div[data-baseweb="slider"] > div {
-    height: 2px !important;
-    background-color: var(--apple-border) !important;
-}
-
-div[data-baseweb="slider"] [role="slider"] {
-    width: 18px !important;
-    height: 18px !important;
-    border: 1px solid var(--apple-border) !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
-}
-
-/* Hide Decorations */
 header, footer { display: none !important; }

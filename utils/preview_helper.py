@@ -19,7 +19,7 @@ def get_base_params():
         'interpolation': st.session_state.interpolation_method,
         
         # Crop parameters 
-        'crop_target_ratio': st.session_state.crop_target_ratio,
+        'crop_target_ratio': st.session_state.crop_target_ratio if st.session_state.crop_ratio_selected != "Original" else None,
         'crop_scale': st.session_state.crop_scale,
         'crop_x_offset': st.session_state.crop_x_offset,
         'crop_y_offset': st.session_state.crop_y_offset,

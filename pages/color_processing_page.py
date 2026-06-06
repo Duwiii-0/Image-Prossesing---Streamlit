@@ -4,20 +4,14 @@ from PIL import Image
 
 from image_processing.color_processing import (
     apply_rgb_to_grayscale,
-    apply_channel_split,
     apply_hsv_adjustment,
     apply_invert_colors,
     apply_sepia_effect,
     apply_posterize,
     apply_color_balance,
 )
-from utils.preview_helper import get_preview_image
-from utils.ui_helpers import render_reset_and_save_buttons, render_image_preview
-
 
 def render_color_processing_page():
-    """Render Color Processing page"""
-
     # Reset color processing state if not present
     if 'color_processing_state' not in st.session_state:
         st.session_state.color_processing_state = {
@@ -40,14 +34,8 @@ def render_color_processing_page():
     with tab1:
         if st.button("Convert to Grayscale", key="btn_grayscale", use_container_width=True):
             st.session_state.color_processing_state['grayscale'] = True
-            st.session_state.color_processing_state['channel_split'] = False
             st.rerun()
         
-        if st.button("Show RGB Channels", key="btn_channel_split", use_container_width=True):
-            st.session_state.color_processing_state['channel_split'] = True
-            st.session_state.color_processing_state['grayscale'] = False
-            st.rerun()
-
     with tab2:
         hue_shift = st.slider("Hue", -180, 180, st.session_state.color_processing_state['hue_shift'], key="hue_shift_slider")
         if hue_shift != st.session_state.color_processing_state['hue_shift']:
@@ -116,32 +104,25 @@ def render_color_processing_page():
 
     # Apply all color processing
     processed = st.session_state.original_image.copy()
-    
     if st.session_state.color_processing_state['grayscale']:
         processed = apply_rgb_to_grayscale(processed)
         if len(processed.shape) == 2:
             processed = np.stack([processed] * 3, axis=2)
-    
     hue = st.session_state.color_processing_state['hue_shift']
     sat = st.session_state.color_processing_state['saturation_scale']
     bright = st.session_state.color_processing_state['value_scale']
     if hue != 0 or sat != 1.0 or bright != 1.0:
         processed = apply_hsv_adjustment(processed, hue, sat, bright)
-    
     if st.session_state.color_processing_state['invert']:
         processed = apply_invert_colors(processed)
-    
     sepia_int = st.session_state.color_processing_state['sepia_intensity']
     if sepia_int > 0:
         processed = apply_sepia_effect(processed, sepia_int)
-    
     if st.session_state.color_processing_state['posterize_levels'] != 8:
         processed = apply_posterize(processed, st.session_state.color_processing_state['posterize_levels'])
-    
     r_shift = st.session_state.color_processing_state['red_shift']
     g_shift = st.session_state.color_processing_state['green_shift']
     b_shift = st.session_state.color_processing_state['blue_shift']
     if r_shift != 0 or g_shift != 0 or b_shift != 0:
         processed = apply_color_balance(processed, r_shift, g_shift, b_shift)
-    
     st.session_state.processed_image = processed

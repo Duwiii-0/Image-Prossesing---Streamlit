@@ -3,12 +3,10 @@ import numpy as np
 from PIL import Image
 from utils.preview_helper import get_preview_image
 from utils.state_manager import reset_binary_edge_state
-from utils.ui_helpers import render_image_preview, render_reset_and_save_buttons, render_section_header
 from utils.constants import (
     THRESHOLD_METHODS, ADAPTIVE_METHODS, EDGE_METHODS, 
     SOBEL_DIRECTIONS, MORPH_OPERATIONS
 )
-
 
 def render_binary_edge_processing_page():
     tab1, tab2, tab3 = st.tabs([

@@ -15,6 +15,7 @@ def render_image_enhancement_page():
     ])
 
     with tab1:
+        st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
         brightness_val = st.slider(
             "Brightness", -150, 150,
             value=st.session_state.brightness,

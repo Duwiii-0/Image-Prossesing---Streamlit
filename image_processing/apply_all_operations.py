@@ -66,10 +66,16 @@ def apply_geometric_only(
     if scale != 1.0:
         img = apply_scaling(img, scale=scale)
     
-    if crop_target_ratio is not None:
+    if crop_target_ratio is not None or crop_scale < 1.0 or crop_x_offset != 0 or crop_y_offset != 0:
+        # If target ratio is None (Original), calculate it dynamically based on CURRENT rotated image
+        current_target_ratio = crop_target_ratio
+        if current_target_ratio is None:
+            curr_h, curr_w = img.shape[:2]
+            current_target_ratio = curr_w / curr_h
+            
         img = apply_ratio_crop(
             img,
-            target_ratio=crop_target_ratio,
+            target_ratio=current_target_ratio,
             scale=crop_scale,
             x_offset=crop_x_offset,
             y_offset=crop_y_offset

@@ -53,19 +53,22 @@ def apply_rotation(img, angle=0):
 
     matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
 
-    cos = abs(matrix[0, 0])
-    sin = abs(matrix[0, 1])
+    # Calculate absolute cosine and sine of the rotation angle
+    abs_cos = abs(matrix[0, 0])
+    abs_sin = abs(matrix[0, 1])
 
-    new_w = int((h * sin) + (w * cos))
-    new_h = int((h * cos) + (w * sin))
+    # Calculate the new bounding dimensions of the image
+    bound_w = int(h * abs_sin + w * abs_cos)
+    bound_h = int(h * abs_cos + w * abs_sin)
 
-    matrix[0, 2] += (new_w / 2) - center[0]
-    matrix[1, 2] += (new_h / 2) - center[1]
+    # Adjust the rotation matrix to take into account the translation
+    matrix[0, 2] += bound_w / 2 - center[0]
+    matrix[1, 2] += bound_h / 2 - center[1]
 
     return cv2.warpAffine(
         img,
         matrix,
-        (new_w, new_h),
+        (bound_w, bound_h),
         flags=cv2.INTER_LINEAR,
         borderMode=cv2.BORDER_CONSTANT,
         borderValue=(255, 255, 255)
