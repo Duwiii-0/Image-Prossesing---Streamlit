@@ -99,11 +99,12 @@ html, body, .stApp, .main, [data-testid="stMain"] {
     right: 0 !important;
     width: 25% !important;
     height: 100% !important;
+    box-sizing: border-box !important;
     background-color: white !important;
     border-left: 1px solid var(--apple-border) !important;
     overflow-y: auto !important; /* THIS ENABLES SCROLL */
     overflow-x: hidden !important;
-    padding: 2rem 1.5rem !important;
+    padding: 2rem 1.5rem 5rem 1.5rem !important; /* Extra bottom padding for export button */
     display: block !important;
 }
 
@@ -117,6 +118,26 @@ html, body, .stApp, .main, [data-testid="stMain"] {
 [data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) span,
 [data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) .stMarkdown {
     color: #1D1D1F !important;
+}
+
+/* Explicitly FIX BUTTONS to have black background and white text */
+.stButton > button,
+.stDownloadButton > button {
+    background-color: #1D1D1F !important;
+    border: 1px solid #1D1D1F !important;
+    color: #FFFFFF !important;
+    width: 100% !important;
+    border-radius: 8px !important;
+}
+
+/* Override the forced black text for paragraphs inside buttons */
+[data-testid="stHorizontalBlock"] .stButton > button p,
+[data-testid="stHorizontalBlock"] .stDownloadButton > button p,
+.stButton > button p,
+.stDownloadButton > button p,
+.stButton > button span,
+.stDownloadButton > button span {
+    color: #FFFFFF !important;
 }
 
 /* Fix Slider titles visibility */
@@ -201,7 +222,7 @@ html, body, .stApp, .main, [data-testid="stMain"] {
     max-height: 80% !important;
 }
 
-/* Sidebar Nav Buttons */
+/* Sidebar Nav Buttons overrides (if needed) */
 .stButton > button {
     width: 100% !important;
     border-radius: 8px !important;
