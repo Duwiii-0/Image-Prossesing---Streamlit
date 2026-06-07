@@ -163,10 +163,10 @@ html, body, .stApp, .main, [data-testid="stMain"] {
 /* Image Card (only if it's the output image) */
 [data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(1) [data-testid="stImage"],
 [data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(1) [data-testid="stImage"] {
-    background: white !important;
-    padding: 12px !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
-    border-radius: 12px !important;
+    background: transparent !important;
+    padding: 0px !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;
     margin: auto !important;
     display: flex !important;
     justify-content: center !important;
@@ -223,10 +223,10 @@ html, body, .stApp, .main, [data-testid="stMain"] {
 /* Image Card in Stage */
 [data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(1) [data-testid="stImage"],
 [data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(1) [data-testid="stImage"] {
-    background: white !important;
-    padding: 12px !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
-    border-radius: 12px !important;
+    background: transparent !important;
+    padding: 0px !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;
     margin: auto !important;
     display: flex !important;
     justify-content: center !important;

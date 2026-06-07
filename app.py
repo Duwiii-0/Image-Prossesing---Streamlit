@@ -10,6 +10,7 @@ from pages.image_restoration_page import render_image_restoration_page
 from pages.binary_edge_processing_page import render_binary_edge_processing_page
 from pages.color_processing_page import render_color_processing_page
 from pages.image_segmentation_page import render_image_segmentation_page
+from pages.image_compression_page import render_image_compression_page
 
 from utils.state_manager import init_session_state, reset_all_state
 from utils.ui_helpers import load_css
@@ -47,7 +48,8 @@ with st.sidebar:
         ("Image Restoration", ""),
         ("Binary & Edge Processing", ""),
         ("Color Processing", ""),
-        ("Image Segmentation", "")
+        ("Image Segmentation", ""),
+        ("Image Compression", "")
     ]
     
     for page_name, icon in nav_items:
@@ -84,6 +86,28 @@ with col_stage:
         preview_image = get_preview_image()
         st.image(preview_image, use_container_width=False)
 
+        # Convert original image to base64 for floating thumbnail
+        import base64
+        h, w = st.session_state.original_image.shape[:2]
+        img_pil = Image.fromarray(st.session_state.original_image)
+        buf = io.BytesIO()
+        img_pil.save(buf, format="PNG")
+        b64_img = base64.b64encode(buf.getvalue()).decode("utf-8")
+        
+        # Floating Reference Image over the bottom left of the preview
+        st.markdown(f"""
+        <div style="position: relative; height: 0px; z-index: 1000;">
+            <div style="position: absolute; bottom: 0px; left: 0px;
+                        background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
+                        padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+                        width: 240px; border: 1px solid rgba(0,0,0,0.05);">
+                <div style="font-size: 0.75rem; color: #86868B; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Original Asset</div>
+                <img src="data:image/png;base64,{b64_img}" style="width: 100%; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);">
+                <div style="font-size: 0.75rem; color: #1D1D1F; margin-top: 6px; text-align: center; font-weight: 500;">{w} × {h} px</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
 # 2. RIGHT BAR (INSPECTOR)
 with col_inspector:
     # 0. IMPORT ASSET
@@ -111,26 +135,7 @@ with col_inspector:
             
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
 
-        # 2. SOURCE ASSET & METADATA
-        st.markdown('<span class="section-label">Source Asset</span>', unsafe_allow_html=True)
-        h, w = st.session_state.original_image.shape[:2]
-        st.image(st.session_state.original_image, use_container_width=True)
-        
-        # Integrated Metadata
-        st.markdown(f"""
-        <div style="margin-top: 0.5rem; padding: 10px; background: #F5F5F7; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);">
-            <div style="font-size: 0.85rem; font-weight: 700; color: #1D1D1F; display: flex; justify-content: space-between;">
-                <span>Resolution</span>
-                <span>{w} × {h} px</span>
-            </div>
-            <div style="font-size: 0.75rem; color: #86868B; margin-top: 4px; display: flex; justify-content: space-between;">
-                <span>Format</span>
-                <span>RGB Mode</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
 
-        st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
 
         # 3. TOOL SETTINGS (CONTROLS ONLY)
         st.markdown('<span class="section-label">Tool Settings</span>', unsafe_allow_html=True)
@@ -146,6 +151,8 @@ with col_inspector:
             render_color_processing_page()
         elif st.session_state.current_page == "Image Segmentation":
             render_image_segmentation_page()
+        elif st.session_state.current_page == "Image Compression":
+            render_image_compression_page()
         
         st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
 
@@ -154,27 +161,30 @@ with col_inspector:
         export_format = st.selectbox("Format", ["PNG", "JPEG", "BMP"], key="export_fmt_final")
         export_name = st.text_input("Filename", value="edited_studio", key="export_name_final")
         
-        res_pil = Image.fromarray(st.session_state.processed_image)
-        buf = io.BytesIO()
-        if export_format == "PNG":
-            res_pil.save(buf, format="PNG")
-            mime, ext = "image/png", "png"
-        elif export_format == "JPEG":
-            if res_pil.mode == 'RGBA': res_pil = res_pil.convert('RGB')
-            res_pil.save(buf, format="JPEG", quality=95)
-            mime, ext = "image/jpeg", "jpg"
+        if st.session_state.processed_image is not None:
+            res_pil = Image.fromarray(st.session_state.processed_image)
+            buf = io.BytesIO()
+            if export_format == "PNG":
+                res_pil.save(buf, format="PNG")
+                mime, ext = "image/png", "png"
+            elif export_format == "JPEG":
+                if res_pil.mode == 'RGBA': res_pil = res_pil.convert('RGB')
+                res_pil.save(buf, format="JPEG", quality=95)
+                mime, ext = "image/jpeg", "jpg"
+            else:
+                res_pil.save(buf, format="BMP")
+                mime, ext = "image/bmp", "bmp"
+                
+            st.download_button(
+                label=f"Download {export_format}",
+                data=buf.getvalue(),
+                file_name=f"{export_name}.{ext}",
+                mime=mime,
+                type="primary",
+                use_container_width=True,
+                key="download_btn_final"
+            )
         else:
-            res_pil.save(buf, format="BMP")
-            mime, ext = "image/bmp", "bmp"
-            
-        st.download_button(
-            label=f"Download {export_format}",
-            data=buf.getvalue(),
-            file_name=f"{export_name}.{ext}",
-            mime=mime,
-            type="primary",
-            use_container_width=True,
-            key="download_btn_final"
-        )
+            st.info("No processed image to export.")
     else:
         st.info("Upload an image to start")

@@ -16,7 +16,7 @@ def apply_translation(img, tx=0, ty=0):
         (w, h),
         flags=cv2.INTER_LINEAR,
         borderMode=cv2.BORDER_CONSTANT,
-        borderValue=(255, 255, 255)
+        borderValue=(229, 229, 234)
     )
 
 
@@ -71,7 +71,7 @@ def apply_rotation(img, angle=0):
         (bound_w, bound_h),
         flags=cv2.INTER_LINEAR,
         borderMode=cv2.BORDER_CONSTANT,
-        borderValue=(255, 255, 255)
+        borderValue=(229, 229, 234)
     )
 
 
