@@ -13,7 +13,7 @@ def apply_thresholding(img, threshold_value=127, max_value=255, method="Binary")
         method: metode thresholding ("Binary", "Binary Inverse")
     
     Returns:
-        image hasil thresholding (grayscale/biner)
+        image hasil thresholding (RGB 3 channel)
     """
     # Konversi ke grayscale jika perlu
     if len(img.shape) == 3:
@@ -29,6 +29,8 @@ def apply_thresholding(img, threshold_value=127, max_value=255, method="Binary")
     thresh_method = method_map.get(method, cv2.THRESH_BINARY)
     _, result = cv2.threshold(gray, threshold_value, max_value, thresh_method)
     
+    # Convert to 3 channel RGB
+    result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
     return result
 
 
@@ -44,7 +46,7 @@ def apply_adaptive_thresholding(img, max_value=255, method="Mean", block_size=11
         C: konstanta yang dikurangkan dari mean
     
     Returns:
-        image hasil adaptive thresholding
+        image hasil adaptive thresholding (RGB 3 channel)
     """
     if len(img.shape) == 3:
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
@@ -64,6 +66,8 @@ def apply_adaptive_thresholding(img, max_value=255, method="Mean", block_size=11
     adaptive_method = method_map.get(method, cv2.ADAPTIVE_THRESH_MEAN_C)
     result = cv2.adaptiveThreshold(gray, max_value, adaptive_method, cv2.THRESH_BINARY, block_size, C)
     
+    # Convert to 3 channel RGB
+    result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
     return result
 
 
@@ -81,7 +85,7 @@ def apply_edge_detection(img, method="Canny", low_threshold=50, high_threshold=1
         log_sigma: sigma untuk Gaussian blur pada LoG
     
     Returns:
-        image hasil edge detection
+        image hasil edge detection (RGB 3 channel)
     """
     # Konversi ke grayscale
     if len(img.shape) == 3:
@@ -145,6 +149,8 @@ def apply_edge_detection(img, method="Canny", low_threshold=50, high_threshold=1
     else:
         edges = cv2.Canny(gray, low_threshold, high_threshold)
     
+    # Convert to 3 channel RGB
+    edges = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)
     return edges
 
 
@@ -159,7 +165,7 @@ def apply_morphology(img, operation="Erosion", kernel_size=3, iterations=1):
         iterations: jumlah iterasi
     
     Returns:
-        image hasil operasi morfologi
+        image hasil operasi morfologi (RGB 3 channel)
     """
     # Konversi ke grayscale jika perlu
     if len(img.shape) == 3:
@@ -177,4 +183,6 @@ def apply_morphology(img, operation="Erosion", kernel_size=3, iterations=1):
     else:
         result = gray
     
-    return result   
+    # Convert to 3 channel RGB
+    result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
+    return result

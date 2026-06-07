@@ -241,4 +241,24 @@ html, body, .stApp, .main, [data-testid="stMain"] {
     border-radius: 8px !important;
 }
 
+/* Khusus untuk expander header di inspector (sidebar kanan) */
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) .st-emotion-cache-1ma3354,
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) .st-emotion-cache-1ma3354[aria-expanded="true"] {
+    background-color: #F5F5F7 !important;
+    color: #1D1D1F !important;
+    border-color: rgba(0,0,0,0.08) !important;
+}
+
+/* Warna teks di dalam header expander */
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) .st-emotion-cache-1ma3354 p,
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) .st-emotion-cache-1ma3354 span {
+    color: #1D1D1F !important;
+}
+
+/* Hover tetap terang */
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) .st-emotion-cache-1ma3354:hover {
+    background-color: #E5E5EA !important;
+    color: #1D1D1F !important;
+}
+
 header, footer { display: none !important; }

@@ -35,12 +35,17 @@ def render_image_enhancement_page():
             st.rerun()
 
     with tab2:
-        st.markdown("<p style='font-size: 0.8rem;'>Adjust image contrast by distributing intensity values.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 0.8rem;'>Histogram equalization improves contrast by spreading out intensity values.</p>", unsafe_allow_html=True)
+        
         if st.button("Apply Equalization", type="primary", use_container_width=True):
-            st.session_state.processed_image = apply_histogram_equalization(
-                st.session_state.processed_image
-            )
+            st.session_state.histogram_equalization_enabled = True
             st.rerun()
+        
+        # Tampilkan status (opsional, tapi membantu)
+        if st.session_state.histogram_equalization_enabled:
+            st.success("Equalization applied")
+        else:
+            st.info("Equalization not applied")
 
     with tab3:
         sharpening_val = st.slider(

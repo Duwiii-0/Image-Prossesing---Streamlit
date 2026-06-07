@@ -7,6 +7,7 @@ def get_base_params():
         # Enhancement
         'brightness': st.session_state.brightness,
         'contrast': st.session_state.contrast,
+        'histogram_equalization_enabled': st.session_state.histogram_equalization_enabled,
         'blur_size': st.session_state.blur_size,
         'sharpening': st.session_state.sharpening,
         
@@ -30,7 +31,11 @@ def get_base_params():
         'restoration_sp_kernel': st.session_state.restoration_sp_kernel,
         
         # Binary & Edge
-        'binary_edge_mode': st.session_state.binary_edge_mode,
+        'binary_edge_mode': 'none',  
+        'threshold_enabled': st.session_state.threshold_enabled,
+        'edge_enabled': st.session_state.edge_enabled,
+        'morph_enabled': st.session_state.morph_enabled,
+        'threshold_type': st.session_state.threshold_type,
         'binary_threshold_value': st.session_state.binary_threshold_value,
         'binary_threshold_method': st.session_state.binary_threshold_method,
         'binary_adaptive_method': st.session_state.binary_adaptive_method,
@@ -48,14 +53,20 @@ def get_base_params():
 
         # Segmentation
         'segmentation_mode': st.session_state.segmentation_mode, 
+        'seg_threshold_enabled': st.session_state.seg_threshold_enabled,
+        'seg_threshold_mode': st.session_state.seg_threshold_mode,
         'seg_threshold_value': st.session_state.seg_threshold_value,
         'seg_adaptive_method': st.session_state.seg_adaptive_method,
         'seg_adaptive_block': st.session_state.seg_adaptive_block,
         'seg_adaptive_c': st.session_state.seg_adaptive_c,
+        'seg_edge_enabled': st.session_state.seg_edge_enabled,
+        'seg_edge_method': st.session_state.seg_edge_method,
         'seg_edge_low': st.session_state.seg_edge_low,
         'seg_edge_high': st.session_state.seg_edge_high,
         'seg_edge_kernel': st.session_state.seg_edge_kernel,
         'seg_sobel_direction': st.session_state.seg_sobel_direction,
+        'seg_region_enabled': st.session_state.seg_region_enabled,
+        'seg_region_method': st.session_state.seg_region_method,
         'seg_region_threshold': st.session_state.seg_region_threshold,
         'seg_kmeans_k': st.session_state.seg_kmeans_k,
         'seg_contour_mode': st.session_state.seg_contour_mode,

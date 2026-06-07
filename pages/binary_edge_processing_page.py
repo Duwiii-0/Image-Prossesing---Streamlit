@@ -1,7 +1,4 @@
 import streamlit as st
-import numpy as np
-from PIL import Image
-from utils.preview_helper import get_preview_image
 from utils.state_manager import reset_binary_edge_state
 from utils.constants import (
     THRESHOLD_METHODS, ADAPTIVE_METHODS, EDGE_METHODS, 
@@ -9,138 +6,142 @@ from utils.constants import (
 )
 
 def render_binary_edge_processing_page():
-    tab1, tab2, tab3 = st.tabs([
-        "Threshold", 
-        "Edge", 
-        "Morph"
-    ])
+    tab1, tab2, tab3 = st.tabs(["Threshold", "Edge", "Morph"])
 
-    # TAB 1: THRESHOLDING 
+    # ========== TAB 1: THRESHOLD ==========
     with tab1:
-        sub_tab1, sub_tab2 = st.tabs(["Simple", "Adaptive"])
+        if 'thresh_mode' not in st.session_state:
+            st.session_state.thresh_mode = "None"
         
-        with sub_tab1:
-            threshold_val = st.slider(
-                "Value", 0, 255,
-                value=st.session_state.binary_threshold_value,
-                key="threshold_val_temp"
-            )
-            if threshold_val != st.session_state.binary_threshold_value:
-                st.session_state.binary_threshold_value = threshold_val
-                st.rerun()
-            
-            method_val = st.selectbox(
-                "Method",
-                THRESHOLD_METHODS,
-                index=0 if st.session_state.binary_threshold_method == "Binary" else 1,
-                key="threshold_method_temp"
-            )
-            if method_val != st.session_state.binary_threshold_method:
-                st.session_state.binary_threshold_method = method_val
-                st.rerun()
-            
-            if st.button("Apply Simple", type="primary", use_container_width=True):
-                st.session_state.binary_edge_mode = "threshold"
-                st.rerun()
-        
-        with sub_tab2:
-            adaptive_method = st.selectbox(
-                "Method",
-                ADAPTIVE_METHODS,
-                index=0 if st.session_state.binary_adaptive_method == "Mean" else 1,
-                key="adaptive_method_temp"
-            )
-            if adaptive_method != st.session_state.binary_adaptive_method:
-                st.session_state.binary_adaptive_method = adaptive_method
-                st.rerun()
-            
-            block_size = st.slider(
-                "Block", 3, 31, step=2,
-                value=st.session_state.binary_adaptive_block,
-                key="adaptive_block_temp"
-            )
-            if block_size != st.session_state.binary_adaptive_block:
-                st.session_state.binary_adaptive_block = block_size
-                st.rerun()
-            
-            c_val = st.slider(
-                "C", 0, 20,
-                value=st.session_state.binary_adaptive_c,
-                key="adaptive_c_temp"
-            )
-            if c_val != st.session_state.binary_adaptive_c:
-                st.session_state.binary_adaptive_c = c_val
-                st.rerun()
-            
-            if st.button("Apply Adaptive", type="primary", use_container_width=True):
-                st.session_state.binary_edge_mode = "adaptive_threshold"
-                st.rerun()
-
-    # TAB 2: EDGE DETECTION 
-    with tab2:
-        edge_method = st.selectbox(
-            "Method",
-            EDGE_METHODS,
-            index=EDGE_METHODS.index(st.session_state.edge_method),
-            key="edge_method_temp"
+        threshold_mode = st.selectbox(
+            "Mode", ["None", "Simple", "Adaptive"],
+            index=["None", "Simple", "Adaptive"].index(st.session_state.thresh_mode),
+            key="thresh_mode_widget"
         )
-        if edge_method != st.session_state.edge_method:
-            st.session_state.edge_method = edge_method
+        if threshold_mode != st.session_state.thresh_mode:
+            st.session_state.thresh_mode = threshold_mode
+            if threshold_mode == "None":
+                st.session_state.threshold_enabled = False
+            else:
+                st.session_state.threshold_enabled = True
+                if threshold_mode == "Simple":
+                    st.session_state.threshold_type = "simple"
+                elif threshold_mode == "Adaptive":
+                    st.session_state.threshold_type = "adaptive"
             st.rerun()
         
-        if st.session_state.edge_method == "Canny":
-            low_val = st.slider("Low", 0, 255, value=st.session_state.edge_low, key="edge_low_temp")
-            if low_val != st.session_state.edge_low:
-                st.session_state.edge_low = low_val
-                st.rerun()
-            high_val = st.slider("High", 0, 255, value=st.session_state.edge_high, key="edge_high_temp")
-            if high_val != st.session_state.edge_high:
-                st.session_state.edge_high = high_val
-                st.rerun()
-        
-        if st.session_state.edge_method == "Sobel":
-            sobel_dir = st.radio("Dir", SOBEL_DIRECTIONS, index=SOBEL_DIRECTIONS.index(st.session_state.edge_sobel_direction), key="sobel_dir_temp", horizontal=True)
-            if sobel_dir != st.session_state.edge_sobel_direction:
-                st.session_state.edge_sobel_direction = sobel_dir
+        if threshold_mode == "Simple":
+            val = st.slider("Value", 0, 255, value=st.session_state.binary_threshold_value, key="th_val_widget")
+            if val != st.session_state.binary_threshold_value:
+                st.session_state.binary_threshold_value = val
                 st.rerun()
             
-            kernel_val = st.slider("Kernel", 1, 7, step=2, value=st.session_state.edge_kernel, key="edge_kernel_temp")
-            if kernel_val != st.session_state.edge_kernel:
-                st.session_state.edge_kernel = kernel_val
+            method = st.selectbox("Method", THRESHOLD_METHODS, index=THRESHOLD_METHODS.index(st.session_state.binary_threshold_method), key="th_method_widget")
+            if method != st.session_state.binary_threshold_method:
+                st.session_state.binary_threshold_method = method
                 st.rerun()
         
-        if st.session_state.edge_method in ["LoG", "Laplacian"]:
-            kernel_val = st.slider("Kernel", 1, 7, step=2, value=st.session_state.edge_kernel, key="edge_kernel_log_lap_temp")
-            if kernel_val != st.session_state.edge_kernel:
-                st.session_state.edge_kernel = kernel_val
+        elif threshold_mode == "Adaptive":
+            method = st.selectbox("Method", ADAPTIVE_METHODS, index=ADAPTIVE_METHODS.index(st.session_state.binary_adaptive_method), key="ad_method_widget")
+            if method != st.session_state.binary_adaptive_method:
+                st.session_state.binary_adaptive_method = method
+                st.rerun()
+            
+            block = st.slider("Block", 3, 31, step=2, value=st.session_state.binary_adaptive_block, key="ad_block_widget")
+            if block != st.session_state.binary_adaptive_block:
+                st.session_state.binary_adaptive_block = block
+                st.rerun()
+            
+            c = st.slider("C", 0, 20, value=st.session_state.binary_adaptive_c, key="ad_c_widget")
+            if c != st.session_state.binary_adaptive_c:
+                st.session_state.binary_adaptive_c = c
                 st.rerun()
 
-        if st.button("Apply Edge", type="primary", use_container_width=True):
-            st.session_state.binary_edge_mode = "edge"
+    # ========== TAB 2: EDGE ==========
+    with tab2:
+        edge_methods_with_none = ["None"] + EDGE_METHODS
+        current_method = st.session_state.edge_method
+        if current_method not in edge_methods_with_none:
+            current_method = "Canny"
+        idx = edge_methods_with_none.index(current_method) if current_method in edge_methods_with_none else 1
+        
+        method = st.selectbox(
+            "Method", edge_methods_with_none,
+            index=idx,
+            key="edge_method_widget"
+        )
+        if method != st.session_state.edge_method:
+            st.session_state.edge_method = method
+            if method == "None":
+                st.session_state.edge_enabled = False
+            else:
+                st.session_state.edge_enabled = True
             st.rerun()
+        
+        if method != "None":
+            if method == "Canny":
+                low = st.slider("Low", 0, 255, value=st.session_state.edge_low, key="edge_low_widget")
+                if low != st.session_state.edge_low:
+                    st.session_state.edge_low = low
+                    st.rerun()
+                high = st.slider("High", 0, 255, value=st.session_state.edge_high, key="edge_high_widget")
+                if high != st.session_state.edge_high:
+                    st.session_state.edge_high = high
+                    st.rerun()
+            elif method == "Sobel":
+                dir_val = st.radio("Dir", SOBEL_DIRECTIONS, index=SOBEL_DIRECTIONS.index(st.session_state.edge_sobel_direction), key="sobel_dir_widget", horizontal=True)
+                if dir_val != st.session_state.edge_sobel_direction:
+                    st.session_state.edge_sobel_direction = dir_val
+                    st.rerun()
+                kernel = st.slider("Kernel", 1, 7, step=2, value=st.session_state.edge_kernel, key="edge_kernel_widget")
+                if kernel != st.session_state.edge_kernel:
+                    st.session_state.edge_kernel = kernel
+                    st.rerun()
+            elif method in ["Laplacian", "LoG"]:
+                kernel = st.slider("Kernel", 1, 7, step=2, value=st.session_state.edge_kernel, key="edge_kernel_widget")
+                if kernel != st.session_state.edge_kernel:
+                    st.session_state.edge_kernel = kernel
+                    st.rerun()
+            else:  # Prewitt, Roberts
+                st.info("Kernel size not used for Prewitt/Roberts (fixed 3x3).")
+        else:
+            st.info("Edge detection disabled.")
 
-    # TAB 3: MORPHOLOGY 
+    # ========== TAB 3: MORPHOLOGY ==========
     with tab3:
-        morph_op = st.selectbox("Op", MORPH_OPERATIONS, index=0 if st.session_state.morph_operation == "Erosion" else 1, key="morph_op_temp")
-        if morph_op != st.session_state.morph_operation:
-            st.session_state.morph_operation = morph_op
+        morph_ops_with_none = ["None"] + MORPH_OPERATIONS
+        current_op = st.session_state.morph_operation
+        if current_op not in morph_ops_with_none:
+            current_op = "Erosion"
+        idx = morph_ops_with_none.index(current_op) if current_op in morph_ops_with_none else 1
+        
+        op = st.selectbox(
+            "Operation", morph_ops_with_none,
+            index=idx,
+            key="morph_op_widget"
+        )
+        if op != st.session_state.morph_operation:
+            st.session_state.morph_operation = op
+            if op == "None":
+                st.session_state.morph_enabled = False
+            else:
+                st.session_state.morph_enabled = True
             st.rerun()
         
-        kernel_size = st.slider("Kernel", 3, 15, step=2, value=st.session_state.morph_kernel, key="morph_kernel_temp")
-        if kernel_size != st.session_state.morph_kernel:
-            st.session_state.morph_kernel = kernel_size
-            st.rerun()
-        
-        iterations = st.slider("Iter", 1, 5, value=st.session_state.morph_iterations, key="morph_iter_temp")
-        if iterations != st.session_state.morph_iterations:
-            st.session_state.morph_iterations = iterations
-            st.rerun()
-        
-        if st.button("Apply Morph", type="primary", use_container_width=True):
-            st.session_state.binary_edge_mode = "morphology"
-            st.rerun()
+        if op != "None":
+            kernel = st.slider("Kernel", 3, 15, step=2, value=st.session_state.morph_kernel, key="morph_kernel_widget")
+            if kernel != st.session_state.morph_kernel:
+                st.session_state.morph_kernel = kernel
+                st.rerun()
+            iters = st.slider("Iter", 1, 5, value=st.session_state.morph_iterations, key="morph_iter_widget")
+            if iters != st.session_state.morph_iterations:
+                st.session_state.morph_iterations = iters
+                st.rerun()
+        else:
+            st.info("Morphology disabled.")
 
     st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
     if st.button("Reset Binary & Edge", use_container_width=True):
         reset_binary_edge_state()
+        st.session_state.thresh_mode = "None"
         st.rerun()

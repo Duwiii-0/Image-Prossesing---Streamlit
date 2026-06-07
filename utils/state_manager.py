@@ -13,6 +13,8 @@ def init_session_state():
         st.session_state.brightness = DEFAULT_BRIGHTNESS
     if 'contrast' not in st.session_state:
         st.session_state.contrast = DEFAULT_CONTRAST
+    if 'histogram_equalization_enabled' not in st.session_state:
+        st.session_state.histogram_equalization_enabled = False
     if 'blur_size' not in st.session_state:
         st.session_state.blur_size = DEFAULT_BLUR_SIZE
     if 'sharpening' not in st.session_state:
@@ -53,8 +55,14 @@ def init_session_state():
         st.session_state.restoration_sp_kernel = DEFAULT_RESTORATION_SP_KERNEL
     
     # Binary & Edge
-    if 'binary_edge_mode' not in st.session_state:
-        st.session_state.binary_edge_mode = DEFAULT_BINARY_EDGE_MODE
+    if 'threshold_enabled' not in st.session_state:
+        st.session_state.threshold_enabled = False
+    if 'edge_enabled' not in st.session_state:
+        st.session_state.edge_enabled = False
+    if 'morph_enabled' not in st.session_state:
+        st.session_state.morph_enabled = False
+    if 'threshold_type' not in st.session_state:
+        st.session_state.threshold_type = "simple"   
     if 'binary_threshold_value' not in st.session_state:
         st.session_state.binary_threshold_value = DEFAULT_BINARY_THRESHOLD_VALUE
     if 'binary_threshold_method' not in st.session_state:
@@ -66,7 +74,7 @@ def init_session_state():
     if 'binary_adaptive_c' not in st.session_state:
         st.session_state.binary_adaptive_c = DEFAULT_BINARY_ADAPTIVE_C
     if 'edge_method' not in st.session_state:
-        st.session_state.edge_method = DEFAULT_EDGE_METHOD
+        st.session_state.edge_method = "None"
     if 'edge_low' not in st.session_state:
         st.session_state.edge_low = DEFAULT_EDGE_LOW
     if 'edge_high' not in st.session_state:
@@ -78,7 +86,7 @@ def init_session_state():
     if 'edge_log_sigma' not in st.session_state:
         st.session_state.edge_log_sigma = DEFAULT_EDGE_LOG_SIGMA
     if 'morph_operation' not in st.session_state:
-        st.session_state.morph_operation = DEFAULT_MORPH_OPERATION
+        st.session_state.morph_operation = "None"
     if 'morph_kernel' not in st.session_state:
         st.session_state.morph_kernel = DEFAULT_MORPH_KERNEL
     if 'morph_iterations' not in st.session_state:
@@ -87,6 +95,12 @@ def init_session_state():
     # Segmentation
     if 'segmentation_mode' not in st.session_state:
         st.session_state.segmentation_mode = "none"
+    if 'seg_threshold_enabled' not in st.session_state:
+        st.session_state.seg_threshold_enabled = False
+    if 'seg_edge_enabled' not in st.session_state:
+        st.session_state.seg_edge_enabled = False
+    if 'seg_region_enabled' not in st.session_state:
+        st.session_state.seg_region_enabled = False
     if 'seg_threshold_mode' not in st.session_state:
         st.session_state.seg_threshold_mode = DEFAULT_THRESHOLD_MODE
     if 'seg_threshold_value' not in st.session_state:
@@ -120,6 +134,7 @@ def reset_enhancement_state():
     """Reset only enhancement state to defaults"""
     st.session_state.brightness = DEFAULT_BRIGHTNESS
     st.session_state.contrast = DEFAULT_CONTRAST
+    st.session_state.histogram_equalization_enabled = False
     st.session_state.blur_size = DEFAULT_BLUR_SIZE
     st.session_state.sharpening = DEFAULT_SHARPENING
 
@@ -147,20 +162,22 @@ def reset_restoration_state():
     st.session_state.restoration_sp_kernel = DEFAULT_RESTORATION_SP_KERNEL
 
 def reset_binary_edge_state():
-    """Reset only binary edge state to defaults"""
-    st.session_state.binary_edge_mode = DEFAULT_BINARY_EDGE_MODE
+    st.session_state.threshold_enabled = False
+    st.session_state.edge_enabled = False
+    st.session_state.morph_enabled = False
+    st.session_state.threshold_type = "simple"
     st.session_state.binary_threshold_value = DEFAULT_BINARY_THRESHOLD_VALUE
     st.session_state.binary_threshold_method = DEFAULT_BINARY_THRESHOLD_METHOD
     st.session_state.binary_adaptive_method = DEFAULT_BINARY_ADAPTIVE_METHOD
     st.session_state.binary_adaptive_block = DEFAULT_BINARY_ADAPTIVE_BLOCK
     st.session_state.binary_adaptive_c = DEFAULT_BINARY_ADAPTIVE_C
-    st.session_state.edge_method = DEFAULT_EDGE_METHOD
+    st.session_state.edge_method = "None"        
     st.session_state.edge_low = DEFAULT_EDGE_LOW
     st.session_state.edge_high = DEFAULT_EDGE_HIGH
     st.session_state.edge_kernel = DEFAULT_EDGE_KERNEL
     st.session_state.edge_sobel_direction = DEFAULT_EDGE_SOBEL_DIRECTION
     st.session_state.edge_log_sigma = DEFAULT_EDGE_LOG_SIGMA
-    st.session_state.morph_operation = DEFAULT_MORPH_OPERATION
+    st.session_state.morph_operation = "None"    
     st.session_state.morph_kernel = DEFAULT_MORPH_KERNEL
     st.session_state.morph_iterations = DEFAULT_MORPH_ITERATIONS
 
@@ -182,8 +199,9 @@ def reset_color_processing_state():
     }
 
 def reset_segmentation_state():
-    """Reset only segmentation state to defaults"""
-    st.session_state.segmentation_mode = "none"  
+    st.session_state.seg_threshold_enabled = False
+    st.session_state.seg_edge_enabled = False
+    st.session_state.seg_region_enabled = False
     st.session_state.seg_threshold_mode = DEFAULT_THRESHOLD_MODE
     st.session_state.seg_threshold_value = DEFAULT_THRESHOLD_VALUE
     st.session_state.seg_adaptive_method = DEFAULT_ADAPTIVE_METHOD
@@ -208,3 +226,4 @@ def reset_all_state():
     reset_restoration_state()
     reset_binary_edge_state()
     reset_color_processing_state()
+    reset_segmentation_state

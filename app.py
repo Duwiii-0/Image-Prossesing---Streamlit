@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import io
+import matplotlib.pyplot as plt
 
 from pages.image_enhancement_page import render_image_enhancement_page
 from pages.geometric_transformation_page import render_geometric_transformation_page
@@ -27,7 +28,9 @@ st.set_page_config(
 load_css()
 
 # Initialize all session state
-init_session_state()
+if 'initialized' not in st.session_state:
+    init_session_state()
+    st.session_state.initialized = True
 
 # Navigation state
 if 'current_page' not in st.session_state:

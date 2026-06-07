@@ -4,6 +4,7 @@ from PIL import Image
 
 def load_css():
     """Load custom CSS from style.css file and inject Tailwind CSS"""
+    # 1. Jalankan pembacaan file css bawaan yang lama
     try:
         # Inject Tailwind CSS Play CDN
         st.markdown('<script src="https://cdn.tailwindcss.com"></script>', unsafe_allow_html=True)
@@ -28,6 +29,38 @@ def load_css():
         """, unsafe_allow_html=True)
     except:
         pass
+
+    # 2. INJECT CSS DISINI
+    st.markdown("""
+    <style>
+    /* 1. Hancurkan atribut width angka (width="436") secara paksa */
+    .e1y9jy7j2, .st-emotion-cache-p75nl5 {
+        width: 100% !important;
+        min-width: 100% !important; /* Memaksa mengabaikan properti width angka */
+        max-width: 100% !important;
+        display: flex !important;
+        justify-content: center !important; /* Dorong isinya ke tengah */
+        align-items: center !important;
+        flex-grow: 1 !important;
+    }
+
+    /* 2. Pastikan container pembungkus luarnya juga ikut melebar penuh */
+    div[data-testid="column"]:nth-child(1) .element-container,
+    div[data-testid="column"]:nth-child(1) [data-testid="stElementContainer"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    /* 3. Paksa gambar (tag <img>) yang ada di dalam class itu berada di center */
+    .e1y9jy7j2 img, .st-emotion-cache-p75nl5 img {
+        display: block !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 def render_tailwind_card(title, content, icon=""):
     """Example of a custom component using Tailwind CSS classes - Minimalist Version"""

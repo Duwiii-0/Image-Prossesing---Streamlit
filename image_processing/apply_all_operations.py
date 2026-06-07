@@ -4,6 +4,7 @@ from image_processing.image_enhancement import (
     apply_brightness_contrast,
     apply_gaussian_blur as apply_enhancement_blur,
     apply_sharpening,
+    apply_histogram_equalization
 )
 
 from image_processing.geometric_transformation import (
@@ -91,6 +92,7 @@ def apply_all_operations(
     base_image,
     brightness=0,
     contrast=0,
+    histogram_equalization_enabled=False,
     blur_size=1,
     sharpening=0,
     angle=0,
@@ -106,6 +108,10 @@ def apply_all_operations(
     crop_scale=1.0,
     crop_x_offset=0,
     crop_y_offset=0,
+    threshold_enabled=False,
+    edge_enabled=False,
+    morph_enabled=False,
+    threshold_type="simple",
     binary_edge_mode="none",
     binary_threshold_value=127,
     binary_threshold_method="Binary",
@@ -122,17 +128,23 @@ def apply_all_operations(
     morph_kernel=3,
     morph_iterations=1,
     segmentation_mode="none",  
+    seg_threshold_enabled=False,
+    seg_threshold_mode="None",
     seg_threshold_value=127,
     seg_adaptive_method="mean",
     seg_adaptive_block=11,
     seg_adaptive_c=2,
+    seg_edge_enabled=False,
+    seg_edge_method="None",
     seg_edge_low=50,
     seg_edge_high=150,
     seg_edge_kernel=3,
     seg_sobel_direction="both",
+    seg_region_enabled=False,
+    seg_region_method="None",
     seg_region_threshold=10,
     seg_kmeans_k=3,
-    seg_contour_mode="external"
+    seg_contour_mode="external",
 ):
     """
     Full pipeline: Restoration -> Geometric -> Enhancement -> Segmentation -> Binary & Edge
@@ -172,6 +184,9 @@ def apply_all_operations(
     
     # STEP 3: ENHANCEMENT 
     img = apply_brightness_contrast(img, brightness=brightness, contrast=contrast)
+
+    if histogram_equalization_enabled:
+        img = apply_histogram_equalization(img)
     
     if blur_size > 1:
         img = apply_enhancement_blur(img, blur_size=blur_size)
@@ -179,47 +194,58 @@ def apply_all_operations(
     if sharpening > 0:
         img = apply_sharpening(img, strength=sharpening)
     
-    # STEP 4: IMAGE SEGMENTATION
-    if segmentation_mode == "threshold_global":
-        img = apply_global_threshold(img, threshold_value=seg_threshold_value)
-    elif segmentation_mode == "threshold_adaptive":
-        img = apply_seg_adaptive_threshold(img, method=seg_adaptive_method, block_size=seg_adaptive_block, c=seg_adaptive_c)
-    elif segmentation_mode == "threshold_otsu":
-        img = apply_otsu_threshold(img)
-    elif segmentation_mode == "edge_canny":
-        img = apply_canny_edge(img, low_threshold=seg_edge_low, high_threshold=seg_edge_high)
-    elif segmentation_mode == "edge_sobel":
-        img = apply_sobel_edge(img, kernel_size=seg_edge_kernel, direction=seg_sobel_direction)
-    elif segmentation_mode == "edge_laplacian":
-        img = apply_laplacian_edge(img, kernel_size=seg_edge_kernel)
-    elif segmentation_mode == "region_growing":
-        img = apply_simple_region_growing(img, threshold=seg_region_threshold)
-    elif segmentation_mode == "kmeans":
-        img = apply_kmeans_segmentation(img, k=seg_kmeans_k)
-    elif segmentation_mode == "contour":
-        img = apply_contour_segmentation(img, mode=seg_contour_mode)
-    elif segmentation_mode == "watershed":
-        img = apply_watershed(img)
-    
-    # Convert binary image (2D) to 3 channel
+    # STEP 4: IMAGE SEGMENTATION (PIPELINE)
+    # 4a. Threshold-based segmentation
+    if seg_threshold_enabled:
+        if seg_threshold_mode == "Global":
+            img = apply_global_threshold(img, threshold_value=seg_threshold_value)
+        elif seg_threshold_mode == "Adaptive":
+            img = apply_seg_adaptive_threshold(img, method=seg_adaptive_method, block_size=seg_adaptive_block, c=seg_adaptive_c)
+        elif seg_threshold_mode == "Otsu":
+            img = apply_otsu_threshold(img)
+
+    # 4b. Edge-based segmentation
+    if seg_edge_enabled:
+        if seg_edge_method == "Canny":
+            img = apply_canny_edge(img, low_threshold=seg_edge_low, high_threshold=seg_edge_high)
+        elif seg_edge_method == "Sobel":
+            img = apply_sobel_edge(img, kernel_size=seg_edge_kernel, direction=seg_sobel_direction)
+        elif seg_edge_method == "Laplacian":
+            img = apply_laplacian_edge(img, kernel_size=seg_edge_kernel)
+
+    # 4c. Region-based segmentation
+    if seg_region_enabled:
+        if seg_region_method == "Region Growing":
+            img = apply_simple_region_growing(img, threshold=seg_region_threshold)
+        elif seg_region_method == "K-Means":
+            img = apply_kmeans_segmentation(img, k=seg_kmeans_k)
+        elif seg_region_method == "Contour":
+            img = apply_contour_segmentation(img, mode=seg_contour_mode)
+        elif seg_region_method == "Watershed":
+            img = apply_watershed(img)
+
+    # Convert binary image (2D) to 3 channel (jika perlu)
     if len(img.shape) == 2:
         img = np.stack([img] * 3, axis=2)
     
-    # STEP 5: BINARY & EDGE PROCESSING 
-    if binary_edge_mode == "threshold":
-        img = apply_thresholding(
-            img,
-            threshold_value=binary_threshold_value,
-            method=binary_threshold_method
-        )
-    elif binary_edge_mode == "adaptive_threshold":
-        img = apply_adaptive_thresholding(
-            img,
-            method=binary_adaptive_method,
-            block_size=binary_adaptive_block,
-            C=binary_adaptive_c
-        )
-    elif binary_edge_mode == "edge":
+    # STEP 5: BINARY & EDGE PROCESSING (PIPELINE)
+    # Terapkan threshold terlebih dahulu jika diaktifkan
+    if threshold_enabled:
+        if threshold_type == "simple":
+            img = apply_thresholding(
+                img,
+                threshold_value=binary_threshold_value,
+                method=binary_threshold_method
+            )
+        else:  # adaptive
+            img = apply_adaptive_thresholding(
+                img,
+                method=binary_adaptive_method,
+                block_size=binary_adaptive_block,
+                C=binary_adaptive_c
+            )
+    # Kemudian edge detection jika diaktifkan
+    if edge_enabled:
         img = apply_edge_detection(
             img,
             method=edge_method,
@@ -229,7 +255,8 @@ def apply_all_operations(
             sobel_direction=edge_sobel_direction,
             log_sigma=edge_log_sigma
         )
-    elif binary_edge_mode == "morphology":
+    # Terakhir morphology jika diaktifkan
+    if morph_enabled:
         img = apply_morphology(
             img,
             operation=morph_operation,
