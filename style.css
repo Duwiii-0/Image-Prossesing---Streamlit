@@ -126,17 +126,30 @@ html, body, .stApp, .main, [data-testid="stMain"] {
     background-color: #1D1D1F !important;
     border: 1px solid #1D1D1F !important;
     color: #FFFFFF !important;
-    width: 100% !important;
     border-radius: 8px !important;
 }
 
-/* Override the forced black text for paragraphs inside buttons */
-[data-testid="stHorizontalBlock"] .stButton > button p,
-[data-testid="stHorizontalBlock"] .stDownloadButton > button p,
-.stButton > button p,
-.stDownloadButton > button p,
-.stButton > button span,
-.stDownloadButton > button span {
+/* Override the forced black text for paragraphs inside buttons, with HIGH specificity */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) .stButton > button p,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) .stButton > button span,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) .stDownloadButton > button p,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) .stDownloadButton > button span,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) .stButton > button p,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) .stButton > button span,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) .stDownloadButton > button p,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) .stDownloadButton > button span {
+    color: #FFFFFF !important;
+}
+
+/* File Uploader Base: Force text inside file uploader (like uploaded file info) to be black */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) [data-testid="stFileUploader"] *,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) [data-testid="stFileUploader"] * {
+    color: #1D1D1F !important;
+}
+
+/* Override File Uploader Dropzone: Force text inside the dropzone (kotak hitam) to be white */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) [data-testid="stFileUploaderDropzone"] *,
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) [data-testid="stFileUploaderDropzone"] * {
     color: #FFFFFF !important;
 }
 
