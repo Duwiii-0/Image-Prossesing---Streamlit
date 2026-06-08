@@ -59,5 +59,89 @@ history = model.fit(
 
 # Save Model
 model.save("laptop_classifier.keras")
+print("\nModel berhasil disimpan ke 'laptop_classifier.keras'")
 
-print("Model berhasil disimpan")
+# ------------------
+# ANALYTICS & RESULTS
+# ------------------
+import os
+import numpy as np
+import matplotlib
+matplotlib.use('Agg') # Force non-interactive backend to avoid Qt/GUI errors
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix, classification_report
+
+# 1. Plot Training History (Accuracy & Loss)
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+epochs_range = range(len(acc))
+
+plt.figure(figsize=(12, 5))
+
+# Plot Accuracy
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, acc, label='Training Accuracy', color='#0071E3', linewidth=2)
+plt.plot(epochs_range, val_acc, label='Validation Accuracy', color='#FF9500', linewidth=2)
+plt.legend(loc='lower right')
+plt.title('Training & Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.grid(True, linestyle='--', alpha=0.5)
+
+# Plot Loss
+plt.subplot(1, 2, 2)
+plt.plot(epochs_range, loss, label='Training Loss', color='#FF3B30', linewidth=2)
+plt.plot(epochs_range, val_loss, label='Validation Loss', color='#4CD964', linewidth=2)
+plt.legend(loc='upper right')
+plt.title('Training & Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.grid(True, linestyle='--', alpha=0.5)
+
+plt.tight_layout()
+plt.savefig("training_metrics.png")
+print("\n[INFO] Plot akurasi & loss disimpan ke 'training_metrics.png'")
+
+# 2. Confusion Matrix & Classification Report
+print("\nMenghitung metrik evaluasi pada dataset validasi...")
+y_true = []
+y_pred = []
+
+for images, labels in val_ds:
+    predictions = model.predict(images, verbose=0)
+    y_pred.extend(np.argmax(predictions, axis=1))
+    y_true.extend(labels.numpy())
+
+y_true = np.array(y_true)
+y_pred = np.array(y_pred)
+class_names = train_ds.class_names
+
+# Print Text Classification Report
+print("\n" + "="*50)
+print("CLASSIFICATION REPORT")
+print("="*50)
+print(classification_report(y_true, y_pred, target_names=class_names))
+
+# Print Text Confusion Matrix
+cm = confusion_matrix(y_true, y_pred)
+print("="*50)
+print("CONFUSION MATRIX (Console)")
+print("="*50)
+print(f"Classes: {class_names}")
+print(cm)
+print("="*50)
+
+# Plot Confusion Matrix
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+            xticklabels=class_names, yticklabels=class_names,
+            cbar=True, annot_kws={"size": 14})
+plt.title('Confusion Matrix', fontsize=14, pad=15)
+plt.xlabel('Predicted Label', fontsize=12)
+plt.ylabel('True Label', fontsize=12)
+plt.tight_layout()
+plt.savefig("confusion_matrix.png")
+print("[INFO] Plot confusion matrix disimpan ke 'confusion_matrix.png'")
