@@ -12,6 +12,7 @@ from pages.binary_edge_processing_page import render_binary_edge_processing_page
 from pages.color_processing_page import render_color_processing_page
 from pages.image_segmentation_page import render_image_segmentation_page
 from pages.image_compression_page import render_image_compression_page
+from pages.laptop_detection_page import render_laptop_detection_page
 
 from utils.state_manager import init_session_state, reset_all_state
 from utils.ui_helpers import load_css
@@ -52,7 +53,8 @@ with st.sidebar:
         ("Binary & Edge Processing", ""),
         ("Color Processing", ""),
         ("Image Segmentation", ""),
-        ("Image Compression", "")
+        ("Image Compression", ""),
+        ("Laptop AI Studio", "")
     ]
     
     for page_name, icon in nav_items:
@@ -72,6 +74,10 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # --- MAIN LAYOUT ---
+if st.session_state.current_page == "Laptop AI Studio":
+    render_laptop_detection_page()
+    st.stop()
+
 col_stage, col_inspector = st.columns([3, 1], gap="small")
 
 # 1. MIDDLE PART (STAGE)

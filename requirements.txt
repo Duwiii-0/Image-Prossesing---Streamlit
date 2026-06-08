@@ -3,3 +3,9 @@ pandas
 numpy
 opencv-python-headless
 Pillow
+tensorflow-cpu
+torch
+torchvision
+matplotlib
+seaborn
+scikit-learn
