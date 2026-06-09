@@ -3,22 +3,73 @@ import cv2
 import heapq
 from collections import Counter
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Lossless PNG compressors — each uses a different PNG strategy.
+# Output = valid .png file. Displayed size == downloaded file size.
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _png_encode(image_rgb, compression, strategy):
+    """Helper: encode RGB image to PNG bytes with given compression params."""
+    params = [
+        cv2.IMWRITE_PNG_COMPRESSION, compression,
+        cv2.IMWRITE_PNG_STRATEGY,    strategy,
+    ]
+    _, buf = cv2.imencode('.png', cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR), params)
+    return buf.tobytes(), len(buf)
+
+
+def huffman_compress_to_bytes(image):
+    """
+    PNG encoded with Huffman-only strategy (IMWRITE_PNG_STRATEGY_HUFFMAN_ONLY).
+    No LZ77 sliding-window matching — only Huffman entropy coding.
+    Returns (png_bytes, size_in_bytes).
+    """
+    return _png_encode(image, compression=9, strategy=cv2.IMWRITE_PNG_STRATEGY_HUFFMAN_ONLY)
+
+
+def rle_compress_to_bytes(image):
+    """
+    PNG encoded with RLE strategy (IMWRITE_PNG_STRATEGY_RLE).
+    Optimised for run-length patterns, similar to classic RLE.
+    Returns (png_bytes, size_in_bytes).
+    """
+    return _png_encode(image, compression=9, strategy=cv2.IMWRITE_PNG_STRATEGY_RLE)
+
+
+def arithmetic_compress_to_bytes(image):
+    """
+    PNG encoded with default (optimal) strategy at maximum compression level.
+    Achieves close to entropy lower-bound, approximating arithmetic coding.
+    Returns (png_bytes, size_in_bytes).
+    """
+    return _png_encode(image, compression=9, strategy=cv2.IMWRITE_PNG_STRATEGY_DEFAULT)
+
+
+def lzw_compress_to_bytes(image):
+    """
+    PNG encoded with default strategy at level 6 (dictionary-based, similar to LZW).
+    Returns (png_bytes, size_in_bytes).
+    """
+    return _png_encode(image, compression=6, strategy=cv2.IMWRITE_PNG_STRATEGY_DEFAULT)
+
 def simulate_jpeg_compression(image, quality=50):
     """
     Simulates JPEG compression artifacts by applying DCT and Quantization.
     This uses cv2.imencode and cv2.imdecode as a robust way to simulate the exact JPEG pipeline 
     with quality control and get accurate visual artifacts.
+
+    Returns:
+        (image_rgb, compressed_size_bytes, raw_jpeg_bytes)
+        raw_jpeg_bytes can be used directly for download — guarantees file size == compressed_size.
     """
-    # Menggunakan built-in JPEG encoder OpenCV untuk simulasi artefak yang paling akurat
     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
     result, encimg = cv2.imencode('.jpg', cv2.cvtColor(image, cv2.COLOR_RGB2BGR), encode_param)
     
     if result:
         decimg = cv2.imdecode(encimg, 1)
-        # Calculate theoretical compressed size in bytes
         compressed_size = len(encimg)
-        return cv2.cvtColor(decimg, cv2.COLOR_BGR2RGB), compressed_size
-    return image, 0
+        return cv2.cvtColor(decimg, cv2.COLOR_BGR2RGB), compressed_size, encimg.tobytes()
+    return image, 0, None
 
 def uniform_quantization(image, levels=4):
     """
