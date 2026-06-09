@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import time
 
-from utils.ui_helpers import render_section_header, render_reset_and_save_buttons
+from utils.ui_helpers import render_section_header
 from image_processing.compression import (
     simulate_jpeg_compression,
     uniform_quantization,
@@ -128,4 +128,6 @@ def render_image_compression_page():
             st.session_state.processed_image = original.copy()
 
     st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
-    render_reset_and_save_buttons()
+    if st.button("Reset Compression", use_container_width=True):
+        st.session_state.processed_image = st.session_state.original_image.copy()
+        st.rerun()

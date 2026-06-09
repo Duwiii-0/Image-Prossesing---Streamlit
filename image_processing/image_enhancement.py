@@ -2,11 +2,19 @@ import cv2
 import numpy as np
 
 def apply_brightness_contrast(img, brightness=0, contrast=0):
-    alpha = (contrast + 100) / 100.0
-    beta = brightness
-    img_result = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
+    result = img.astype(np.float32)
 
-    return img_result
+    # Brightness
+    result += brightness
+
+    # Contrast
+    if contrast != 0:
+        factor = (259 * (contrast + 255)) / (255 * (259 - contrast))
+        result = factor * (result - 128) + 128
+
+    result = np.clip(result, 0, 255)
+
+    return result.astype(np.uint8)
 
 
 def apply_histogram_equalization(img):
