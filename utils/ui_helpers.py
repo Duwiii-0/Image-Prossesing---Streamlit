@@ -138,6 +138,8 @@ def create_download_button(image, filename="edited_image", button_text="Save Edi
         ext = "jpg"
     
     else:  # BMP
+        if result_pil.mode != 'RGB':
+            result_pil = result_pil.convert('RGB')
         buf = io.BytesIO()
         result_pil.save(buf, format="BMP")
         byte_im = buf.getvalue()
@@ -211,6 +213,8 @@ def render_reset_and_save_buttons(reset_callback=None, image_to_save=None):
                     mime = "image/jpeg"
                     ext = "jpg"
                 else:
+                    if result_pil.mode != 'RGB':
+                        result_pil = result_pil.convert('RGB')
                     buf = io.BytesIO()
                     result_pil.save(buf, format="BMP")
                     byte_im = buf.getvalue()

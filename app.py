@@ -139,7 +139,7 @@ with col_inspector:
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        if image.mode == 'RGBA': image = image.convert('RGB')
+        if image.mode != 'RGB': image = image.convert('RGB')
         img_array = np.array(image)
         if st.session_state.original_image is None or not np.array_equal(st.session_state.original_image, img_array):
             st.session_state.original_image = img_array
@@ -200,6 +200,7 @@ with col_inspector:
                 res_pil.save(buf, format="JPEG", quality=95)
                 mime, ext = "image/jpeg", "jpg"
             else:
+                if res_pil.mode != 'RGB': res_pil = res_pil.convert('RGB')
                 res_pil.save(buf, format="BMP")
                 mime, ext = "image/bmp", "bmp"
                 

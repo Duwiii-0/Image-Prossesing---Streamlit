@@ -104,8 +104,17 @@ html, body, .stApp, .main, [data-testid="stMain"] {
     border-left: 1px solid var(--apple-border) !important;
     overflow-y: auto !important; /* THIS ENABLES SCROLL */
     overflow-x: hidden !important;
-    padding: 2rem 1.5rem 5rem 1.5rem !important; /* Extra bottom padding for export button */
+    padding: 2rem 1.5rem 5rem 1.5rem !important; /* Large bottom padding so Export is always reachable */
     display: block !important;
+}
+
+/* Inspector inner vertical block - MUST NOT constrain height so parent can scroll */
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > [data-testid="column"]:nth-child(2) [data-testid="stVerticalBlock"],
+[data-testid="stHorizontalBlock"]:not([data-testid="column"] [data-testid="stHorizontalBlock"]) > div:nth-child(2) [data-testid="stVerticalBlock"] {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
 }
 
 /* Fix text visibility in white inspector */
