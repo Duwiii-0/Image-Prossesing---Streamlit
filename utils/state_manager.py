@@ -92,6 +92,23 @@ def init_session_state():
     if 'morph_iterations' not in st.session_state:
         st.session_state.morph_iterations = DEFAULT_MORPH_ITERATIONS
 
+    # Color Processing
+    if 'color_processing_state' not in st.session_state:
+        st.session_state.color_processing_state = {
+            'operation': 'None',
+            'grayscale': False,
+            'channel_split': False,
+            'hue_shift': 0,
+            'saturation_scale': 1.0,
+            'value_scale': 1.0,
+            'invert': False,
+            'sepia_intensity': 0.0,
+            'posterize_levels': 8,
+            'red_shift': 0,
+            'green_shift': 0,
+            'blue_shift': 0,
+        }
+
     # Segmentation
     if 'segmentation_mode' not in st.session_state:
         st.session_state.segmentation_mode = "none"
@@ -184,7 +201,6 @@ def reset_binary_edge_state():
 def reset_color_processing_state():
     """Reset only color processing state to defaults"""
     st.session_state.color_processing_state = {
-        'operation': 'None',
         'grayscale': False,
         'channel_split': False,
         'hue_shift': 0,
@@ -192,7 +208,7 @@ def reset_color_processing_state():
         'value_scale': 1.0,
         'invert': False,
         'sepia_intensity': 0.0,
-        'posterize_levels': 4,
+        'posterize_levels': 8,
         'red_shift': 0,
         'green_shift': 0,
         'blue_shift': 0,
@@ -216,7 +232,6 @@ def reset_segmentation_state():
     st.session_state.seg_region_threshold = DEFAULT_REGION_THRESHOLD
     st.session_state.seg_kmeans_k = DEFAULT_KMEANS_K
     st.session_state.seg_contour_mode = DEFAULT_CONTOUR_MODE
-    st.rerun()
 
 def reset_all_state():
     """Reset all state to defaults (keep images intact)"""
@@ -226,4 +241,4 @@ def reset_all_state():
     reset_restoration_state()
     reset_binary_edge_state()
     reset_color_processing_state()
-    reset_segmentation_state
+    reset_segmentation_state()

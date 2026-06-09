@@ -12,6 +12,7 @@ from pages.binary_edge_processing_page import render_binary_edge_processing_page
 from pages.color_processing_page import render_color_processing_page
 from pages.image_segmentation_page import render_image_segmentation_page
 from pages.image_compression_page import render_image_compression_page
+from pages.histogram_analysis_page import render_histogram_analysis_popup
 from pages.laptop_detection_page import render_laptop_detection_page
 
 from utils.state_manager import init_session_state, reset_all_state
@@ -54,14 +55,27 @@ with st.sidebar:
         ("Color Processing", ""),
         ("Image Segmentation", ""),
         ("Image Compression", ""),
+        ("Histogram Analysis", ""),
         ("Laptop AI Studio", "")
     ]
     
     for page_name, icon in nav_items:
         is_active = st.session_state.current_page == page_name
-        if st.button(page_name, key=f"nav_{page_name}", use_container_width=True, type="primary" if is_active else "secondary"):
-            set_page(page_name)
-            st.rerun()
+        
+        # Pengecekan khusus untuk tombol Histogram Analysis
+        if page_name == "Histogram Analysis":
+            # Matikan tombol jika belum ada gambar yang di-upload biar tidak error
+            is_disabled = st.session_state.original_image is None
+            
+            if st.button(page_name, key=f"nav_{page_name}", use_container_width=True, disabled=is_disabled, type="secondary"):
+                from pages.histogram_analysis_page import render_histogram_analysis_popup
+                render_histogram_analysis_popup() # Panggil modal pop-up secara instan!
+                
+        else:
+            # Tombol navigasi halaman biasa
+            if st.button(page_name, key=f"nav_{page_name}", use_container_width=True, type="primary" if is_active else "secondary"):
+                set_page(page_name)
+                st.rerun()
 
 # --- TOP BAR ---
 st.markdown(f"""
@@ -139,6 +153,10 @@ with col_inspector:
         st.markdown('<span class="section-label">Workspace</span>', unsafe_allow_html=True)
         if st.button("Reset All Settings", use_container_width=True, key="reset_all_global"):
             reset_all_state()
+            if 'reset_counter' in st.session_state:
+                st.session_state.reset_counter += 1
+            else:
+                st.session_state.reset_counter = 1
             st.session_state.processed_image = st.session_state.original_image.copy()
             st.rerun()
             
@@ -169,9 +187,10 @@ with col_inspector:
         st.markdown('<span class="section-label">Export</span>', unsafe_allow_html=True)
         export_format = st.selectbox("Format", ["PNG", "JPEG", "BMP"], key="export_fmt_final")
         export_name = st.text_input("Filename", value="edited_studio", key="export_name_final")
+        export_image = get_preview_image()
         
-        if st.session_state.processed_image is not None:
-            res_pil = Image.fromarray(st.session_state.processed_image)
+        if export_image is not None:
+            res_pil = Image.fromarray(export_image)
             buf = io.BytesIO()
             if export_format == "PNG":
                 res_pil.save(buf, format="PNG")
@@ -194,6 +213,6 @@ with col_inspector:
                 key="download_btn_final"
             )
         else:
-            st.info("No processed image to export.")
+            st.info("No image to export.")
     else:
         st.info("Upload an image to start")

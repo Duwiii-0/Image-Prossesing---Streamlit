@@ -16,3 +16,5 @@ build/
 .coverage
 utils/__pycache__
 image_processing/__pycache__
+
+*.keras

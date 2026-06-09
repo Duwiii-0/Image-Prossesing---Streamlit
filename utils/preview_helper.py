@@ -51,6 +51,18 @@ def get_base_params():
         'morph_kernel': st.session_state.morph_kernel,
         'morph_iterations': st.session_state.morph_iterations,
 
+        # color processing
+        'color_grayscale': st.session_state.color_processing_state.get('grayscale', False),
+        'color_hue_shift': st.session_state.color_processing_state.get('hue_shift', 0),
+        'color_saturation_scale': st.session_state.color_processing_state.get('saturation_scale', 1.0),
+        'color_value_scale': st.session_state.color_processing_state.get('value_scale', 1.0),
+        'color_invert': st.session_state.color_processing_state.get('invert', False),
+        'color_sepia_intensity': st.session_state.color_processing_state.get('sepia_intensity', 0.0),
+        'color_posterize_levels': st.session_state.color_processing_state.get('posterize_levels', 4),
+        'color_red_shift': st.session_state.color_processing_state.get('red_shift', 0),
+        'color_green_shift': st.session_state.color_processing_state.get('green_shift', 0),
+        'color_blue_shift': st.session_state.color_processing_state.get('blue_shift', 0),
+
         # Segmentation
         'segmentation_mode': st.session_state.segmentation_mode, 
         'seg_threshold_enabled': st.session_state.seg_threshold_enabled,

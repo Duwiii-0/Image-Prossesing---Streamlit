@@ -127,6 +127,16 @@ def apply_all_operations(
     morph_operation="Erosion",
     morph_kernel=3,
     morph_iterations=1,
+    color_grayscale=False,
+    color_hue_shift=0,
+    color_saturation_scale=1.0,
+    color_value_scale=1.0,
+    color_invert=False,
+    color_sepia_intensity=0.0,
+    color_posterize_levels=4,
+    color_red_shift=0,
+    color_green_shift=0,
+    color_blue_shift=0,
     segmentation_mode="none",  
     seg_threshold_enabled=False,
     seg_threshold_mode="None",
@@ -193,6 +203,39 @@ def apply_all_operations(
     
     if sharpening > 0:
         img = apply_sharpening(img, strength=sharpening)
+
+    # STEP 3.5: COLOR PROCESSING
+    # Grayscale
+    if color_grayscale:
+        from image_processing.color_processing import apply_rgb_to_grayscale
+        img = apply_rgb_to_grayscale(img)
+        if len(img.shape) == 2:
+            img = np.stack([img] * 3, axis=2)
+    
+    # HSV Adjustment
+    if color_hue_shift != 0 or color_saturation_scale != 1.0 or color_value_scale != 1.0:
+        from image_processing.color_processing import apply_hsv_adjustment
+        img = apply_hsv_adjustment(img, color_hue_shift, color_saturation_scale, color_value_scale)
+    
+    # Invert
+    if color_invert:
+        from image_processing.color_processing import apply_invert_colors
+        img = apply_invert_colors(img)
+    
+    # Sepia
+    if color_sepia_intensity > 0:
+        from image_processing.color_processing import apply_sepia_effect
+        img = apply_sepia_effect(img, color_sepia_intensity)
+    
+    # Posterize
+    if color_posterize_levels < 8:
+        from image_processing.color_processing import apply_posterize
+        img = apply_posterize(img, color_posterize_levels)
+    
+    # Color Balance
+    if color_red_shift != 0 or color_green_shift != 0 or color_blue_shift != 0:
+        from image_processing.color_processing import apply_color_balance
+        img = apply_color_balance(img, color_red_shift, color_green_shift, color_blue_shift)
     
     # STEP 4: IMAGE SEGMENTATION (PIPELINE)
     # 4a. Threshold-based segmentation

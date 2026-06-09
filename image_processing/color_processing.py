@@ -127,10 +127,12 @@ def apply_posterize(img, levels=4):
     Returns:
         image dengan efek posterize
     """
+    # Jika levels 8, tidak ada perubahan 
+    if levels >= 8:
+        return img.copy()
+    
     if levels < 2:
         levels = 2
-    if levels > 8:
-        levels = 8
     
     # Quantize ke jumlah levels
     levels_range = 256 / levels

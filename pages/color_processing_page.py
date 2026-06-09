@@ -1,29 +1,26 @@
 import streamlit as st
-import numpy as np
-from PIL import Image
+from utils.state_manager import reset_color_processing_state
 
-from image_processing.color_processing import (
-    apply_rgb_to_grayscale,
-    apply_hsv_adjustment,
-    apply_invert_colors,
-    apply_sepia_effect,
-    apply_posterize,
-    apply_color_balance,
-)
+def reset_color_processing():
+    reset_color_processing_state()
+    if 'reset_counter' not in st.session_state:
+        st.session_state.reset_counter = 0
+    st.session_state.reset_counter += 1
+    st.rerun()
 
 def render_color_processing_page():
-    # Reset color processing state if not present
+    if 'reset_counter' not in st.session_state:
+        st.session_state.reset_counter = 0
+    
     if 'color_processing_state' not in st.session_state:
         st.session_state.color_processing_state = {
-            'operation': 'None',
             'grayscale': False,
-            'channel_split': False,
             'hue_shift': 0,
             'saturation_scale': 1.0,
             'value_scale': 1.0,
             'invert': False,
             'sepia_intensity': 0.0,
-            'posterize_levels': 4,
+            'posterize_levels': 8,
             'red_shift': 0,
             'green_shift': 0,
             'blue_shift': 0,
@@ -31,98 +28,124 @@ def render_color_processing_page():
     
     tab1, tab2, tab3, tab4 = st.tabs(["Basic", "HSV", "FX", "Balance"])
     
+    # ==================== TAB 1: BASIC ====================
     with tab1:
-        if st.button("Convert to Grayscale", key="btn_grayscale", use_container_width=True):
-            st.session_state.color_processing_state['grayscale'] = True
-            st.rerun()
+        def on_grayscale_change():
+            st.session_state.color_processing_state['grayscale'] = not st.session_state.color_processing_state['grayscale']
         
+        st.button(
+            "Convert to Grayscale",
+            key=f"btn_grayscale_{st.session_state.reset_counter}",
+            on_click=on_grayscale_change,
+            use_container_width=True
+        )
+        
+        if st.session_state.color_processing_state.get('grayscale', False):
+            st.success("✓ Grayscale active")
+        else:
+            st.info("Click to convert to grayscale")
+    
+    # ==================== TAB 2: HSV ====================
     with tab2:
-        hue_shift = st.slider("Hue", -180, 180, st.session_state.color_processing_state['hue_shift'], key="hue_shift_slider")
-        if hue_shift != st.session_state.color_processing_state['hue_shift']:
-            st.session_state.color_processing_state['hue_shift'] = hue_shift
-            st.rerun()
+        def on_hue_change():
+            st.session_state.color_processing_state['hue_shift'] = st.session_state[f"hue_slider_{st.session_state.reset_counter}"]
         
-        saturation = st.slider("Sat", 0.0, 2.0, st.session_state.color_processing_state['saturation_scale'], 0.1, key="saturation_slider")
-        if saturation != st.session_state.color_processing_state['saturation_scale']:
-            st.session_state.color_processing_state['saturation_scale'] = saturation
-            st.rerun()
+        st.slider(
+            "Hue", -180, 180,
+            value=st.session_state.color_processing_state.get('hue_shift', 0),
+            key=f"hue_slider_{st.session_state.reset_counter}",
+            on_change=on_hue_change
+        )
         
-        brightness = st.slider("Val", 0.0, 2.0, st.session_state.color_processing_state['value_scale'], 0.1, key="brightness_slider")
-        if brightness != st.session_state.color_processing_state['value_scale']:
-            st.session_state.color_processing_state['value_scale'] = brightness
-            st.rerun()
+        def on_saturation_change():
+            st.session_state.color_processing_state['saturation_scale'] = st.session_state[f"saturation_slider_{st.session_state.reset_counter}"]
+        
+        st.slider(
+            "Saturation", 0.0, 2.0, step=0.1,
+            value=st.session_state.color_processing_state.get('saturation_scale', 1.0),
+            key=f"saturation_slider_{st.session_state.reset_counter}",
+            on_change=on_saturation_change
+        )
+        
+        def on_value_change():
+            st.session_state.color_processing_state['value_scale'] = st.session_state[f"value_slider_{st.session_state.reset_counter}"]
+        
+        st.slider(
+            "Value", 0.0, 2.0, step=0.1,
+            value=st.session_state.color_processing_state.get('value_scale', 1.0),
+            key=f"value_slider_{st.session_state.reset_counter}",
+            on_change=on_value_change
+        )
     
+    # ==================== TAB 3: FX ====================
     with tab3:
-        if st.button("Invert Colors", key="btn_invert", use_container_width=True):
+        def on_invert_change():
             st.session_state.color_processing_state['invert'] = not st.session_state.color_processing_state['invert']
-            st.rerun()
         
-        sepia_intensity = st.slider("Sepia", 0.0, 1.0, st.session_state.color_processing_state['sepia_intensity'], 0.1, key="sepia_slider")
-        if sepia_intensity != st.session_state.color_processing_state['sepia_intensity']:
-            st.session_state.color_processing_state['sepia_intensity'] = sepia_intensity
-            st.rerun()
+        st.button(
+            "Invert Colors",
+            key=f"btn_invert_{st.session_state.reset_counter}",
+            on_click=on_invert_change,
+            use_container_width=True
+        )
         
-        posterize_levels = st.slider("Levels", 2, 8, st.session_state.color_processing_state['posterize_levels'], key="posterize_slider")
-        if posterize_levels != st.session_state.color_processing_state['posterize_levels']:
-            st.session_state.color_processing_state['posterize_levels'] = posterize_levels
-            st.rerun()
+        if st.session_state.color_processing_state.get('invert', False):
+            st.success("✓ Invert active")
+        else:
+            st.info("Click to invert colors")
+        
+        def on_sepia_change():
+            st.session_state.color_processing_state['sepia_intensity'] = st.session_state[f"sepia_slider_{st.session_state.reset_counter}"]
+        
+        st.slider(
+            "Sepia", 0.0, 1.0, step=0.1,
+            value=st.session_state.color_processing_state.get('sepia_intensity', 0.0),
+            key=f"sepia_slider_{st.session_state.reset_counter}",
+            on_change=on_sepia_change
+        )
+        
+        def on_posterize_change():
+            st.session_state.color_processing_state['posterize_levels'] = st.session_state[f"posterize_slider_{st.session_state.reset_counter}"]
+        
+        st.slider(
+            "Posterize Levels", 2, 8,
+            value=st.session_state.color_processing_state.get('posterize_levels', 8),
+            key=f"posterize_slider_{st.session_state.reset_counter}",
+            on_change=on_posterize_change
+        )
     
+    # ==================== TAB 4: COLOR BALANCE ====================
     with tab4:
-        red_shift = st.slider("Red", -100, 100, st.session_state.color_processing_state['red_shift'], key="red_shift_slider")
-        if red_shift != st.session_state.color_processing_state['red_shift']:
-            st.session_state.color_processing_state['red_shift'] = red_shift
-            st.rerun()
+        def on_red_change():
+            st.session_state.color_processing_state['red_shift'] = st.session_state[f"red_slider_{st.session_state.reset_counter}"]
         
-        green_shift = st.slider("Green", -100, 100, st.session_state.color_processing_state['green_shift'], key="green_shift_slider")
-        if green_shift != st.session_state.color_processing_state['green_shift']:
-            st.session_state.color_processing_state['green_shift'] = green_shift
-            st.rerun()
+        st.slider(
+            "Red", -100, 100,
+            value=st.session_state.color_processing_state.get('red_shift', 0),
+            key=f"red_slider_{st.session_state.reset_counter}",
+            on_change=on_red_change
+        )
         
-        blue_shift = st.slider("Blue", -100, 100, st.session_state.color_processing_state['blue_shift'], key="blue_shift_slider")
-        if blue_shift != st.session_state.color_processing_state['blue_shift']:
-            st.session_state.color_processing_state['blue_shift'] = blue_shift
-            st.rerun()
+        def on_green_change():
+            st.session_state.color_processing_state['green_shift'] = st.session_state[f"green_slider_{st.session_state.reset_counter}"]
+        
+        st.slider(
+            "Green", -100, 100,
+            value=st.session_state.color_processing_state.get('green_shift', 0),
+            key=f"green_slider_{st.session_state.reset_counter}",
+            on_change=on_green_change
+        )
+        
+        def on_blue_change():
+            st.session_state.color_processing_state['blue_shift'] = st.session_state[f"blue_slider_{st.session_state.reset_counter}"]
+        
+        st.slider(
+            "Blue", -100, 100,
+            value=st.session_state.color_processing_state.get('blue_shift', 0),
+            key=f"blue_slider_{st.session_state.reset_counter}",
+            on_change=on_blue_change
+        )
 
     st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
     if st.button("Reset Color", use_container_width=True):
-        st.session_state.color_processing_state = {
-            'operation': 'None',
-            'grayscale': False,
-            'channel_split': False,
-            'hue_shift': 0,
-            'saturation_scale': 1.0,
-            'value_scale': 1.0,
-            'invert': False,
-            'sepia_intensity': 0.0,
-            'posterize_levels': 4,
-            'red_shift': 0,
-            'green_shift': 0,
-            'blue_shift': 0,
-        }
-        st.session_state.processed_image = st.session_state.original_image.copy()
-        st.rerun()
-
-    # Apply all color processing
-    processed = st.session_state.original_image.copy()
-    if st.session_state.color_processing_state['grayscale']:
-        processed = apply_rgb_to_grayscale(processed)
-        if len(processed.shape) == 2:
-            processed = np.stack([processed] * 3, axis=2)
-    hue = st.session_state.color_processing_state['hue_shift']
-    sat = st.session_state.color_processing_state['saturation_scale']
-    bright = st.session_state.color_processing_state['value_scale']
-    if hue != 0 or sat != 1.0 or bright != 1.0:
-        processed = apply_hsv_adjustment(processed, hue, sat, bright)
-    if st.session_state.color_processing_state['invert']:
-        processed = apply_invert_colors(processed)
-    sepia_int = st.session_state.color_processing_state['sepia_intensity']
-    if sepia_int > 0:
-        processed = apply_sepia_effect(processed, sepia_int)
-    if st.session_state.color_processing_state['posterize_levels'] != 8:
-        processed = apply_posterize(processed, st.session_state.color_processing_state['posterize_levels'])
-    r_shift = st.session_state.color_processing_state['red_shift']
-    g_shift = st.session_state.color_processing_state['green_shift']
-    b_shift = st.session_state.color_processing_state['blue_shift']
-    if r_shift != 0 or g_shift != 0 or b_shift != 0:
-        processed = apply_color_balance(processed, r_shift, g_shift, b_shift)
-    st.session_state.processed_image = processed
+        reset_color_processing()
