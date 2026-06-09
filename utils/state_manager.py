@@ -35,6 +35,8 @@ def init_session_state():
         st.session_state.interpolation_method = DEFAULT_INTERPOLATION
     
     # Crop 
+    if 'enable_live_crop' not in st.session_state:
+        st.session_state.enable_live_crop = False
     if 'crop_target_ratio' not in st.session_state:
         st.session_state.crop_target_ratio = DEFAULT_CROP_TARGET_RATIO
     if 'crop_scale' not in st.session_state:
@@ -166,6 +168,7 @@ def reset_geometric_state():
 
 def reset_crop_state():
     """Reset only crop state to defaults"""
+    st.session_state.enable_live_crop = False
     st.session_state.crop_target_ratio = DEFAULT_CROP_TARGET_RATIO
     st.session_state.crop_scale = DEFAULT_CROP_SCALE
     st.session_state.crop_x_offset = DEFAULT_CROP_X_OFFSET
