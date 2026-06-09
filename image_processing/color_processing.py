@@ -36,44 +36,36 @@ def apply_channel_split(img):
     return r, g, b
 
 
-def apply_hsv_adjustment(img, hue_shift=0, saturation_scale=1.0, value_scale=1.0):
-    """
-    Adjust Hue, Saturation, Value dalam HSV color space
-    
-    Args:
-        img: input image (RGB)
-        hue_shift: pergeseran hue (-180 sampai 180)
-        saturation_scale: skala saturasi (0.0 sampai 2.0)
-        value_scale: skala brightness (0.0 sampai 2.0)
-    
-    Returns:
-        image dengan HSV adjustment
-    """
-    if len(img.shape) == 2:
-        # For grayscale, hanya bisa adjust brightness
-        result = img.copy().astype(np.float32)
-        result = result * value_scale
-        return np.clip(result, 0, 255).astype(np.uint8)
-    
-    # Konversi RGB ke HSV
-    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV).astype(np.float32)
-    
-    # Adjust Hue (wrap around 0-180)
-    if hue_shift != 0:
-        hsv[:, :, 0] = (hsv[:, :, 0] + hue_shift) % 180
-    
-    # Adjust Saturation
-    if saturation_scale != 1.0:
-        hsv[:, :, 1] = np.clip(hsv[:, :, 1] * saturation_scale, 0, 255)
-    
-    # Adjust Value (brightness)
-    if value_scale != 1.0:
-        hsv[:, :, 2] = np.clip(hsv[:, :, 2] * value_scale, 0, 255)
-    
-    # Konversi kembali ke RGB
-    hsv = hsv.astype(np.uint8)
-    return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+def apply_hsv_adjustment(img,
+                         hue_shift=0,
+                         saturation_scale=1.0,
+                         value_scale=1.0):
 
+    # BGR -> HSV
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV).astype(np.float32)
+
+    # Hue
+    hsv[:, :, 0] = (hsv[:, :, 0] + hue_shift/2) % 180
+
+    # Saturation
+    hsv[:, :, 1] = np.clip(
+        hsv[:, :, 1] * saturation_scale,
+        0,
+        255
+    )
+
+    # Value
+    hsv[:, :, 2] = np.clip(
+        hsv[:, :, 2] * value_scale,
+        0,
+        255
+    )
+
+    # HSV -> BGR
+    return cv2.cvtColor(
+        hsv.astype(np.uint8),
+        cv2.COLOR_HSV2BGR
+    )
 
 def apply_invert_colors(img):
     """
@@ -143,32 +135,27 @@ def apply_posterize(img, levels=4):
 
 def apply_color_balance(img, red_shift=0, green_shift=0, blue_shift=0):
     """
-    Adjust color balance dengan mengubah channel individual
-    
-    Args:
-        img: input image
-        red_shift: pergeseran red channel (-100 sampai 100)
-        green_shift: pergeseran green channel (-100 sampai 100)
-        blue_shift: pergeseran blue channel (-100 sampai 100)
-    
-    Returns:
-        image dengan color balance adjustment
+    img harus dalam format RGB
     """
+
     if len(img.shape) == 2:
         return img.copy()
-    
-    result = img.copy().astype(np.float32)
-    
-    # Split channels
-    r, g, b = cv2.split(result)
-    
-    # Apply shifts
+
+    result = img.astype(np.float32).copy()
+
+    # Split channel sesuai urutan RGB
+    r = result[:, :, 0]
+    g = result[:, :, 1]
+    b = result[:, :, 2]
+
+    # Tambahkan shift
     r = np.clip(r + red_shift, 0, 255)
     g = np.clip(g + green_shift, 0, 255)
     b = np.clip(b + blue_shift, 0, 255)
-    
-    # Merge back
-    result = cv2.merge([b, g, r])
+
+    # Gabungkan kembali dalam urutan RGB
+    result = np.stack([r, g, b], axis=2)
+
     return result.astype(np.uint8)
 
 
